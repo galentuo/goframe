@@ -13,9 +13,17 @@ type CoreLogger struct {
 }
 
 type Logger struct {
-	level  LogLevel
-	logger *CoreLogger
-	fields map[string]interface{}
+	level      LogLevel
+	coreLogger *CoreLogger
+	fields     map[string]interface{}
+}
+
+func NewLogger(level LogLevel, cl *CoreLogger, fields map[string]interface{}) Logger {
+	return Logger{
+		level:      level,
+		coreLogger: cl,
+		fields:     fields,
+	}
 }
 
 func NewCoreLogger() *CoreLogger {
@@ -51,25 +59,25 @@ func (l Logger) WithFields(fields map[string]interface{}) FieldLogger {
 
 func (l Logger) Info(msg string) {
 	if l.level <= LogLevelInfo {
-		l.logger.Sugar().Infow(msg, mapFieldsToArr(l.fields)...)
+		l.coreLogger.Sugar().Infow(msg, mapFieldsToArr(l.fields)...)
 	}
 }
 
 func (l Logger) Error(msg string) {
 	if l.level <= LogLevelError {
-		l.logger.Sugar().Errorw(msg, mapFieldsToArr(l.fields)...)
+		l.coreLogger.Sugar().Errorw(msg, mapFieldsToArr(l.fields)...)
 	}
 }
 
 func (l Logger) Warning(msg string) {
 	if l.level <= LogLevelWarn {
-		l.logger.Sugar().Warnw(msg, mapFieldsToArr(l.fields)...)
+		l.coreLogger.Sugar().Warnw(msg, mapFieldsToArr(l.fields)...)
 	}
 }
 
 func (l Logger) Debug(msg string) {
 	if l.level <= LogLevelDebug {
-		l.logger.Sugar().Debugw(msg, mapFieldsToArr(l.fields)...)
+		l.coreLogger.Sugar().Debugw(msg, mapFieldsToArr(l.fields)...)
 	}
 }
 
@@ -80,26 +88,26 @@ type FieldLogger struct {
 
 func (l FieldLogger) Info(msg string) {
 	if l.inner.level <= LogLevelInfo {
-		l.inner.logger.Sugar().Infow(msg, mapFieldsToArr(l.fields)...)
+		l.inner.coreLogger.Sugar().Infow(msg, mapFieldsToArr(l.fields)...)
 	}
 }
 
 func (l FieldLogger) Error(msg string) {
 	if l.inner.level <= LogLevelError {
-		l.inner.logger.Sugar().Errorw(msg, mapFieldsToArr(l.fields)...)
+		l.inner.coreLogger.Sugar().Errorw(msg, mapFieldsToArr(l.fields)...)
 	}
 }
 
 func (l FieldLogger) Warning(msg string) {
 	if l.inner.level <= LogLevelWarn {
-		l.inner.logger.Sugar().Warnw(msg, mapFieldsToArr(l.fields)...)
+		l.inner.coreLogger.Sugar().Warnw(msg, mapFieldsToArr(l.fields)...)
 	}
 }
 
 func (l FieldLogger) Debug(msg string) {
 	fmt.Println("here")
 	if l.inner.level <= LogLevelDebug {
-		l.inner.logger.Sugar().Debugw(msg, mapFieldsToArr(l.fields)...)
+		l.inner.coreLogger.Sugar().Debugw(msg, mapFieldsToArr(l.fields)...)
 	}
 }
 
