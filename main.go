@@ -1,3 +1,0 @@
-package goframe
-
-func main() {}
