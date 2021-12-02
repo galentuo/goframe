@@ -2,14 +2,31 @@ package logger
 
 import (
 	"fmt"
+	"os"
 
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 type Logger struct {
 	level  LogLevel
 	logger *zap.Logger
 	fields map[string]interface{}
+}
+
+func NewZapLogger() *zap.Logger {
+	encoderConfig := zapcore.EncoderConfig{
+		MessageKey:     "msg",
+		LevelKey:       "level",
+		TimeKey:        "time",
+		LineEnding:     zapcore.DefaultLineEnding,
+		EncodeLevel:    zapcore.LowercaseLevelEncoder,
+		EncodeTime:     zapcore.ISO8601TimeEncoder,
+		EncodeDuration: zapcore.SecondsDurationEncoder,
+		EncodeName:     zapcore.FullNameEncoder,
+	}
+	core := zapcore.NewCore(zapcore.NewJSONEncoder(encoderConfig), zapcore.AddSync(os.Stdout), zapcore.DebugLevel)
+	return zap.New(core)
 }
 
 func (l *Logger) SetField(key string, value interface{}) *Logger {
