@@ -3,6 +3,7 @@ package logger
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -133,4 +134,19 @@ const (
 
 func (ll LogLevel) String() string {
 	return [...]string{"DEBUG", "INFO", "WARN", "ERROR"}[ll]
+}
+
+func LogLevelFromStr(l string) LogLevel {
+	levelStr := strings.ToUpper(l)
+	switch levelStr {
+	case "DEBUG":
+		return LogLevelDebug
+	case "INFO":
+		return LogLevelInfo
+	case "WARN":
+		return LogLevelWarn
+	case "ERROR":
+		return LogLevelError
+	}
+	return LogLevelError
 }
