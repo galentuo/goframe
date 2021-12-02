@@ -1,2 +1,2 @@
 # goframe
-packages for use across org
+go packages for bootstraping a go service
