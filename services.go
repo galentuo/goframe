@@ -1,7 +1,11 @@
 package goframe
 
+import "github.com/galentuo/goframe/logger"
+
 type Service interface {
 	Name() string
+	LogLevel() string
+	SetLogLevel(logger.LogLevel)
 }
 
 type BackgroundService interface {
@@ -12,12 +16,46 @@ type BackgroundService interface {
 type HTTPService interface {
 	Service
 	Prefix() string
+	CustomPrefix(string)
+	Routes() map[string][]EndPoint
+	Route(path, httpMethod string, handler HandlerFunction)
+	Middleware() *MiddlewareStack
 }
 
-type RESTService interface {
-	HTTPService
-	Middleware(JSONEndpoint) JSONEndpoint
-	Endpoints() map[string]map[string]JSONEndpoint
+// HandlerFunction is the basis for a HTTPService Endpoint. A Handler
+// will be given a ServerContext interface that represents the
+// given request/response. It is the responsibility of the
+// HandlerFunction to handle the request/response correctly. This
+// could mean rendering a template, JSON, etc... or it could
+// mean returning an error.
+/*
+	func (c ServerContext) error {
+		return c.Response().GenericJSON("Hello World!")
+	}
+*/
+type HandlerFunction func(ServerContext) error
+
+// Endpoint is a type comprising of
+// a route's http method and a HandlerFunction
+/*
+	endpoints["/users"] = []EndPoint{
+		{
+			httpMethod: "GET"
+			handlerFunction: UserListHandlerFunction
+		},
+	}
+*/
+type EndPoint struct {
+	httpMethod      string
+	handlerFunction HandlerFunction
 }
 
-type JSONEndpoint func(APIContext) error
+// Method returns the http method assciated with the EndPoint
+func (e EndPoint) Method() string {
+	return e.httpMethod
+}
+
+// Handler returns the http Handler assciated with the EndPoint
+func (e EndPoint) Handler() HandlerFunction {
+	return e.handlerFunction
+}

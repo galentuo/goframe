@@ -1,15 +1,17 @@
 package goframe
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/felixge/httpsnoop"
+	"github.com/galentuo/goframe/logger"
 	"github.com/google/uuid"
 )
 
-func APIHandler(ep JSONEndpoint, api RESTService, path, method string) http.Handler {
+func APIHandler(hf HandlerFunction, api HTTPService, path, method string, ll logger.LogLevel) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		rl := &responseLogger{w: w, status: http.StatusOK}
 		w = httpsnoop.Wrap(w, httpsnoop.Hooks{
@@ -20,7 +22,7 @@ func APIHandler(ep JSONEndpoint, api RESTService, path, method string) http.Hand
 				return rl.WriteHeader
 			},
 		})
-		ctx := NewAPIContext(r.Context(), cl, w, r)
+		ctx := NewServerContext(r.Context(), ll, w, r)
 
 		t := time.Now()
 
@@ -40,11 +42,11 @@ func APIHandler(ep JSONEndpoint, api RESTService, path, method string) http.Hand
 			SetField("service", api.Name()).
 			SetField("path", r.URL.Path).
 			SetField("method", r.Method)
-		err := api.Middleware(ep)(ctx)
+		err := api.Middleware().handler(hf)(ctx)
 
 		if err != nil {
 			ctx.Logger().Error(err.Error())
-			ctx.Response().JSON(500, ERROR, nil, "Something went wrong")
+			ctx.Response().ErrorJSON(errors.New("something went wrong"))
 		}
 	})
 }

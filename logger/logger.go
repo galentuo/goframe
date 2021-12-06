@@ -19,8 +19,8 @@ type Logger struct {
 	fields     map[string]interface{}
 }
 
-func NewLogger(level LogLevel, cl *CoreLogger, fields map[string]interface{}) Logger {
-	return Logger{
+func NewLogger(level LogLevel, cl *CoreLogger, fields map[string]interface{}) *Logger {
+	return &Logger{
 		level:      level,
 		coreLogger: cl,
 		fields:     fields,
@@ -148,5 +148,5 @@ func LogLevelFromStr(l string) LogLevel {
 	case "ERROR":
 		return LogLevelError
 	}
-	return LogLevelError
+	return LogLevelInfo
 }
