@@ -19,11 +19,11 @@ var _ ServerContext = &DefaultServerContext{}
 type DefaultBasicContext struct {
 	context.Context
 	data   *sync.Map
-	logger logger.Logger
+	logger *logger.Logger
 }
 
 // Logger returns the Logger for this context.
-func (dbc DefaultBasicContext) Logger() logger.Logger {
+func (dbc DefaultBasicContext) Logger() *logger.Logger {
 	return dbc.logger
 }
 
@@ -60,23 +60,23 @@ func (dsc DefaultServerContext) Request() *http.Request {
 	return dsc.req
 }
 
-func NewBasicContext(ctx context.Context, cl *logger.CoreLogger, ll logger.LogLevel) DefaultBasicContext {
+func NewBasicContext(ctx context.Context, cl *logger.CoreLogger, ll logger.LogLevel) *DefaultBasicContext {
 	dbc := DefaultBasicContext{
 		data:    &sync.Map{},
 		Context: ctx,
 		logger:  logger.NewLogger(ll, cl, make(map[string]interface{})),
 	}
-	return dbc
+	return &dbc
 }
 
-func NewServerContext(ctx context.Context, cl *logger.CoreLogger, ll logger.LogLevel, res http.ResponseWriter, req *http.Request) DefaultServerContext {
+func NewServerContext(ctx context.Context, ll logger.LogLevel, res http.ResponseWriter, req *http.Request) DefaultServerContext {
 	llh := req.Header.Get("X-Request-LogLevel")
 	if llh == "debug" {
 		ll = logger.LogLevelDebug
 	}
 	dbc := NewBasicContext(ctx, cl, ll)
 	dsc := DefaultServerContext{
-		DefaultBasicContext: &dbc,
+		DefaultBasicContext: dbc,
 		res:                 res,
 		req:                 req,
 	}

@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func APIHandler(hf HandlerFunction, api HTTPService, path, method string) http.Handler {
+func APIHandler(hf HandlerFunction, api HTTPService, path, method string, ll logger.LogLevel) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		rl := &responseLogger{w: w, status: http.StatusOK}
 		w = httpsnoop.Wrap(w, httpsnoop.Hooks{
@@ -22,7 +22,7 @@ func APIHandler(hf HandlerFunction, api HTTPService, path, method string) http.H
 				return rl.WriteHeader
 			},
 		})
-		ctx := NewServerContext(r.Context(), cl, logger.LogLevelInfo, w, r)
+		ctx := NewServerContext(r.Context(), ll, w, r)
 
 		t := time.Now()
 

@@ -1,7 +1,11 @@
 package goframe
 
+import "github.com/galentuo/goframe/logger"
+
 type Service interface {
 	Name() string
+	LogLevel() string
+	SetLogLevel(logger.LogLevel)
 }
 
 type BackgroundService interface {

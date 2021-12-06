@@ -34,7 +34,7 @@ func (drw DefaultResponseWriter) SuccessJSON(httpCode int, data interface{}, mes
 	}
 	response, err := json.Marshal(responseJson)
 	if err != nil {
-		fmt.Printf("[SuccessJSON] Error: %s; val: %+v", err.Error(), data)
+		cl.Error(fmt.Sprintf("[SuccessJSON] Error: %s; val: %+v", err.Error(), data))
 		return err
 	}
 
@@ -61,7 +61,7 @@ func (drw DefaultResponseWriter) ErrorJSON(err error) error {
 
 	response, e := json.Marshal(responseJson)
 	if e != nil {
-		fmt.Printf("[ErrorJSON] Error: %s; val: %s", e.Error(), err.Error())
+		cl.Error(fmt.Sprintf("[ErrorJSON] Error: %s; val: %s", e.Error(), err.Error()))
 		return e
 	}
 	drw.res.Header().Add("Content-Type", "application/json")

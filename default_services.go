@@ -1,16 +1,29 @@
 package goframe
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/galentuo/goframe/logger"
+)
 
 // assert DefaultService satisfies Service interface
 var _ Service = &DefaultService{}
 
 type DefaultService struct {
-	name string
+	name     string
+	loglevel string
 }
 
 func (ds DefaultService) Name() string {
 	return ds.name
+}
+
+func (ds DefaultService) LogLevel() string {
+	return ds.loglevel
+}
+
+func (ds *DefaultService) SetLogLevel(ll logger.LogLevel) {
+	ds.loglevel = ll.String()
 }
 
 func newService(name string) DefaultService {

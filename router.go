@@ -15,8 +15,10 @@ type DefaultRouter struct {
 	mux *mux.Router
 }
 
-func NewRouter() Router {
-	return &DefaultRouter{mux.NewRouter()}
+func NewRouter(strictSlash bool) Router {
+	r := mux.NewRouter()
+	r.StrictSlash(strictSlash)
+	return &DefaultRouter{r}
 }
 
 func (dr DefaultRouter) Handle(method string, path string, handler http.Handler) {

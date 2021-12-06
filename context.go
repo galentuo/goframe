@@ -9,7 +9,7 @@ import (
 
 type BasicContext interface {
 	context.Context
-	Logger() logger.Logger
+	Logger() *logger.Logger
 	Set(string, interface{})
 	Get(interface{}) interface{}
 }
