@@ -3,9 +3,11 @@ package goframe
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 )
+
+// assert that DefaultResponseWriter implementations is fulfilling its interface
+var _ ResponseWriter = &DefaultResponseWriter{}
 
 type DefaultResponseWriter struct {
 	res http.ResponseWriter
@@ -18,16 +20,18 @@ type standardJSONResponse struct {
 	ErrorCode string      `json:"error_code,omitempty"`
 }
 
-func (drw DefaultResponseWriter) GenericJSON(val interface{}) {
+func (drw DefaultResponseWriter) GenericJSON(val interface{}) error {
 	response, err := json.Marshal(val)
 	if err != nil {
-		log.Panicln(fmt.Sprintf("Error: %s; val: %+v", err.Error(), val))
+		fmt.Printf("[GenericJSON] Error: %s; val: %+v", err.Error(), val)
+		return err
 	}
 	drw.res.Header().Add("Content-Type", "application/json")
 	drw.res.Write(response)
+	return nil
 }
 
-func (drw DefaultResponseWriter) SuccessJSON(httpCode int, data interface{}, message string) {
+func (drw DefaultResponseWriter) SuccessJSON(httpCode int, data interface{}, message string) error {
 	responseJson := standardJSONResponse{
 		Status:  true,
 		Data:    data,
@@ -35,15 +39,17 @@ func (drw DefaultResponseWriter) SuccessJSON(httpCode int, data interface{}, mes
 	}
 	response, err := json.Marshal(responseJson)
 	if err != nil {
-		log.Panicln(fmt.Sprintf("Error: %s; val: %+v", err.Error(), data))
+		fmt.Printf("[SuccessJSON] Error: %s; val: %+v", err.Error(), data)
+		return err
 	}
 
 	drw.res.Header().Add("Content-Type", "application/json")
 	drw.res.WriteHeader(httpCode)
 	drw.res.Write(response)
+	return nil
 }
 
-func (drw DefaultResponseWriter) ErrorJSON(err error) {
+func (drw DefaultResponseWriter) ErrorJSON(err error) error {
 	responseJson := standardJSONResponse{
 		Status: false,
 	}
@@ -60,9 +66,11 @@ func (drw DefaultResponseWriter) ErrorJSON(err error) {
 
 	response, e := json.Marshal(responseJson)
 	if e != nil {
-		log.Panicln(fmt.Sprintf("Error: %s; val: %+v", e.Error(), err.Error()))
+		fmt.Printf("[ErrorJSON] Error: %s; val: %s", e.Error(), err.Error())
+		return e
 	}
 	drw.res.Header().Add("Content-Type", "application/json")
 	drw.res.WriteHeader(httpCode)
 	drw.res.Write(response)
+	return nil
 }

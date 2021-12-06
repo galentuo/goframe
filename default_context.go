@@ -45,7 +45,7 @@ func (dbc DefaultBasicContext) Get(key interface{}) interface{} {
 // DefaultBasicContext is, as its name implies, a default
 // implementation of the BasicContext interface.
 type DefaultServerContext struct {
-	DefaultBasicContext
+	*DefaultBasicContext
 	req *http.Request
 	res http.ResponseWriter
 }
@@ -58,4 +58,28 @@ func (dsc DefaultServerContext) Response() ResponseWriter {
 
 func (dsc DefaultServerContext) Request() *http.Request {
 	return dsc.req
+}
+
+func NewBasicContext(ctx context.Context, cl *logger.CoreLogger, ll logger.LogLevel) DefaultBasicContext {
+	dbc := DefaultBasicContext{
+		data:    &sync.Map{},
+		Context: ctx,
+		logger:  logger.NewLogger(ll, cl, make(map[string]interface{})),
+	}
+	return dbc
+}
+
+func NewServerContext(ctx context.Context, cl *logger.CoreLogger, ll logger.LogLevel, res http.ResponseWriter, req *http.Request) DefaultServerContext {
+	llh := req.Header.Get("X-Request-LogLevel")
+	if llh == "debug" {
+		ll = logger.LogLevelDebug
+	}
+	dbc := NewBasicContext(ctx, cl, ll)
+	dsc := DefaultServerContext{
+		DefaultBasicContext: &dbc,
+		res:                 res,
+		req:                 req,
+	}
+
+	return dsc
 }
