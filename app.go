@@ -45,12 +45,12 @@ func (app *App) Register(_svc Service) {
 	case BackgroundService:
 		bg = svc
 	default:
-		cl.Fatal(fmt.Sprintf("Unknown service type for service %s", svc.Name()))
+		cl.Fatal(fmt.Sprintf("Unknown service type for service %#v", svc))
 	}
 
 	if api != nil {
-		for path, endpoints := range api.Endpoints() {
-			for _, endpoint := range endpoints {
+		for path, routes := range api.Routes() {
+			for _, endpoint := range routes {
 				app.mux.Handle(endpoint.Method(), api.Prefix()+path, APIHandler(endpoint.Handler(), api, path, endpoint.Method()))
 			}
 		}

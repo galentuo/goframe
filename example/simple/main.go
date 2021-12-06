@@ -1,12 +1,30 @@
 package main
 
 import (
-	"fmt"
+	"time"
 
 	"github.com/galentuo/goframe"
 )
 
 func main() {
 	app := goframe.NewApp("simple")
-	fmt.Println(app.Config().GetString("env"))
+
+	service := goframe.NewHTTPService("hello")
+	service.Route("/", "GET", HelloHandler)
+
+	app.Register(service)
+	app.Start(app.Config().GetString("server.host"), app.Config().GetInt("server.port"), 15*time.Second, 15*time.Second)
+}
+
+func HelloHandler(ctx goframe.ServerContext) error {
+	msg := `
+		<!DOCTYPE html>
+		<html>
+		<body>
+		<h1 style="background-color:DodgerBlue;">Hello</h1>
+		<h2 style="background-color:MediumSeaGreen;">World!</h2>
+		</body>
+		</html>
+	`
+	return ctx.Response().Generic(200, []byte(msg))
 }

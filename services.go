@@ -12,7 +12,9 @@ type BackgroundService interface {
 type HTTPService interface {
 	Service
 	Prefix() string
-	Endpoints() map[string][]EndPoint
+	CustomPrefix(string)
+	Routes() map[string][]EndPoint
+	Route(path, httpMethod string, handler HandlerFunction)
 	Middleware() *MiddlewareStack
 }
 

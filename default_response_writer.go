@@ -20,14 +20,9 @@ type standardJSONResponse struct {
 	ErrorCode string      `json:"error_code,omitempty"`
 }
 
-func (drw DefaultResponseWriter) GenericJSON(val interface{}) error {
-	response, err := json.Marshal(val)
-	if err != nil {
-		fmt.Printf("[GenericJSON] Error: %s; val: %+v", err.Error(), val)
-		return err
-	}
-	drw.res.Header().Add("Content-Type", "application/json")
-	drw.res.Write(response)
+func (drw DefaultResponseWriter) Generic(httpCode int, data []byte) error {
+	drw.res.WriteHeader(httpCode)
+	drw.res.Write(data)
 	return nil
 }
 

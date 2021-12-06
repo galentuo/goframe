@@ -25,31 +25,58 @@ var _ HTTPService = &DefaultHTTPService{}
 type DefaultHTTPService struct {
 	*DefaultService
 	prefix     string
-	endpoints  map[string][]EndPoint
+	routes     map[string][]EndPoint
 	middleware *MiddlewareStack
 }
 
-func (dhs DefaultHTTPService) Prefix() string {
-	return fmt.Sprintf("/%s%s", dhs.name, dhs.prefix)
+func (dhs *DefaultHTTPService) Prefix() string {
+	if dhs.prefix == "" {
+		return fmt.Sprintf("/%s", dhs.name)
+	}
+	return dhs.prefix
 }
-func (dhs *DefaultHTTPService) Endpoints() map[string][]EndPoint {
-	return dhs.endpoints
+
+func (dhs *DefaultHTTPService) CustomPrefix(prefix string) {
+	dhs.prefix = prefix
 }
+
+func (dhs *DefaultHTTPService) Routes() map[string][]EndPoint {
+	return dhs.routes
+}
+
 func (dhs *DefaultHTTPService) Middleware() *MiddlewareStack {
 	return dhs.middleware
 }
 
-func NewHTTPService(name string) DefaultHTTPService {
+func (dhs *DefaultHTTPService) Route(path, httpMethod string, handler HandlerFunction) {
+	endpoint := EndPoint{
+		httpMethod:      httpMethod,
+		handlerFunction: handler,
+	}
+	var (
+		endpoints []EndPoint
+		ok        bool
+	)
+	routes := dhs.Routes()
+	if endpoints, ok = routes[path]; !ok {
+		endpoints = []EndPoint{}
+	}
+
+	endpoints = append(endpoints, endpoint)
+	dhs.routes[path] = endpoints
+}
+
+func NewHTTPService(name string) *DefaultHTTPService {
 	ds := newService(name)
-	endpoints := make(map[string][]EndPoint)
+	routes := make(map[string][]EndPoint)
 	var mwf []MiddlewareFunc
 	mws := MiddlewareStack{
 		stack: mwf,
 	}
 	dhs := DefaultHTTPService{
 		DefaultService: &ds,
-		endpoints:      endpoints,
+		routes:         routes,
 		middleware:     &mws,
 	}
-	return dhs
+	return &dhs
 }

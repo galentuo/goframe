@@ -23,5 +23,5 @@ type ServerContext interface {
 type ResponseWriter interface {
 	SuccessJSON(httpStatusCode int, data interface{}, message string) error
 	ErrorJSON(err error) error
-	GenericJSON(interface{}) error
+	Generic(httpStatusCode int, data []byte) error
 }

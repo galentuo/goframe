@@ -14,8 +14,6 @@ package goframe
 */
 type MiddlewareFunc func(HandlerFunction) HandlerFunction
 
-const funcKeyDelimeter = ":"
-
 // Use the specified Middleware for the App.
 // When defined on a `HTTPService` the specified middleware will be
 // inherited by any `Group` calls that are made on that on
