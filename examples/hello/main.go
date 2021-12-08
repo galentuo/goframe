@@ -9,14 +9,10 @@ import (
 func main() {
 	app := goframe.NewApp("hello", true, nil)
 
-	service1 := goframe.NewHTTPServer("world")
+	service1 := goframe.NewHTTPServer("")
 	service1.Route("/", "GET", HelloHandler)
 
-	service2 := goframe.NewHTTPServer("service2")
-	service2.Route("/get", "GET", Service2Handler)
-
 	app.Register(service1)
-	app.Register(service2)
 	app.Start(app.Config().GetString("server.host"), app.Config().GetInt("server.port"), 15*time.Second, 15*time.Second)
 }
 
@@ -31,8 +27,4 @@ func HelloHandler(ctx goframe.ServerContext) error {
 		</html>
 	`
 	return ctx.Response().Generic(200, []byte(msg))
-}
-
-func Service2Handler(ctx goframe.ServerContext) error {
-	return ctx.Response().SuccessJSON(200, "{name:service2}", "up & running")
 }
