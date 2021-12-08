@@ -20,7 +20,7 @@ func init() {
 type App struct {
 	ll     logger.LogLevel
 	name   string
-	config configReader
+	config *configReader
 	mux    Router
 }
 
@@ -32,11 +32,17 @@ func (a *App) CustomCoreLogger(cl_ *logger.CoreLogger) {
 }
 
 // Config() returns the config reader.
-// configs for the app are to be kept inside configs/ dir in app root dir.
-// config values can be fetched by keys eg. "server.host"
-// In production configs can be stored as env var
-// eg. for app name "simple" -> simple_server_host
-func (a *App) Config() configReader { return a.config }
+// Config values can be fetched by keys eg. "server.host".
+// In production configs can be stored as env vars.
+//
+// Defaults:
+// * The default config reader expects the config files
+// to be kept inside configs/ dir in app root dir.
+// * The name of the app would be the default expected config file name.
+// * While using env vars, `_` would be the default seperator.
+// * The env vars would have the app name as a default prefix.
+// * eg. for app name "simple" -> simple_server_host
+func (a *App) Config() *configReader { return a.config }
 
 // App is where it all happens!
 //
@@ -45,11 +51,15 @@ func (a *App) Config() configReader { return a.config }
 // to the former and vice versa. In other words, your application will always
 // see the path as specified in the route.
 //
-// customLogger can be null
-func NewApp(name string, strictSlash bool) *App {
+// configReader is a nullable field; if null it uses a default
+// configReader = NewConfigReader(app.name, "./configs/", app.name, "_")
+func NewApp(name string, strictSlash bool, cr *configReader) *App {
+	if cr == nil {
+		cr = NewConfigReader(name, "./configs/", name, "_")
+	}
 	a := App{
 		name:   name,
-		config: NewConfigReader(name, "./configs/", name, "_"),
+		config: cr,
 		mux:    NewRouter(strictSlash),
 	}
 
