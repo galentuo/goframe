@@ -21,3 +21,4 @@ import "github.com/galentuo/goframe"
 ## Examples
 
 - [HelloWorld Server](examples/hello)
+- [A simple REST API](examples/simple)
