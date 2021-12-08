@@ -4,7 +4,7 @@ import "github.com/galentuo/goframe/logger"
 
 type Service interface {
 	Name() string
-	LogLevel() string
+	loglevel() string
 	SetLogLevel(logger.LogLevel)
 }
 
@@ -15,11 +15,18 @@ type BackgroundService interface {
 
 type HTTPService interface {
 	Service
-	Prefix() string
+	prefix() string
+	// CustomPrefix replaces the default path prefix by the
+	// custom one passed in. The routes on the service
+	// would have the `Service Name` as a default prefix.
 	CustomPrefix(string)
-	Routes() map[string][]EndPoint
+	routes() map[string][]EndPoint
 	Route(path, httpMethod string, handler HandlerFunction)
-	Middleware() *MiddlewareStack
+	middleware() *MiddlewareStack
+	// Use the specified Middleware for the `HTTPService`.
+	// The specified middleware will be inherited by any calls
+	// that are made on the HTTPService.
+	Use(mw ...MiddlewareFunc)
 }
 
 // HandlerFunction is the basis for a HTTPService Endpoint. A Handler

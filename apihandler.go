@@ -29,7 +29,7 @@ func APIHandler(hf HandlerFunction, api HTTPService, path, method string, ll log
 		defer func() {
 			ctx.Logger().WithFields(map[string]interface{}{
 				"status": rl.status,
-			}).Info(fmt.Sprintf("[%s] %s%s took %d ms", method, api.Prefix(), path, time.Since(t).Milliseconds()))
+			}).Info(fmt.Sprintf("[%s] %s%s took %d ms", method, api.prefix(), path, time.Since(t).Milliseconds()))
 		}()
 		log := ctx.Logger()
 		reqID := r.Header.Get("X-Request-ID")
@@ -42,7 +42,7 @@ func APIHandler(hf HandlerFunction, api HTTPService, path, method string, ll log
 			SetField("service", api.Name()).
 			SetField("path", r.URL.Path).
 			SetField("method", r.Method)
-		err := api.Middleware().handler(hf)(ctx)
+		err := api.middleware().handler(hf)(ctx)
 
 		if err != nil {
 			ctx.Logger().Error(err.Error())

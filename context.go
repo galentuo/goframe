@@ -7,7 +7,7 @@ import (
 	"github.com/galentuo/goframe/logger"
 )
 
-type BasicContext interface {
+type Context interface {
 	context.Context
 	Logger() *logger.Logger
 	Set(string, interface{})
@@ -15,7 +15,7 @@ type BasicContext interface {
 }
 
 type ServerContext interface {
-	BasicContext
+	Context
 	Request() *http.Request
 	Response() ResponseWriter
 }

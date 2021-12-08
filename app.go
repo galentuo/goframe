@@ -24,8 +24,12 @@ type App struct {
 	mux    Router
 }
 
-func (a App) Name() string              { return a.name }
-func (a App) LogLevel() logger.LogLevel { return a.ll }
+func (a *App) Name() string              { return a.name }
+func (a *App) LogLevel() logger.LogLevel { return a.ll }
+
+func (a *App) CustomCoreLogger(cl_ *logger.CoreLogger) {
+	cl = cl_
+}
 
 // Config() returns the config reader.
 // configs for the app are to be kept inside configs/ dir in app root dir.
@@ -40,8 +44,9 @@ func (a *App) Config() configReader { return a.config }
 // When true, if the route path is "/path/", accessing "/path" will perform a redirect
 // to the former and vice versa. In other words, your application will always
 // see the path as specified in the route.
+//
+// customLogger can be null
 func NewApp(name string, strictSlash bool) *App {
-	cl = logger.NewCoreLogger()
 	a := App{
 		name:   name,
 		config: NewConfigReader(name, "./configs/", name, "_"),
@@ -54,7 +59,7 @@ func NewApp(name string, strictSlash bool) *App {
 }
 
 func (app *App) Register(_svc Service) {
-	if _svc.LogLevel() == "" {
+	if _svc.loglevel() == "" {
 		_svc.SetLogLevel(app.ll)
 	}
 	var (
@@ -71,9 +76,9 @@ func (app *App) Register(_svc Service) {
 	}
 
 	if api != nil {
-		for path, routes := range api.Routes() {
+		for path, routes := range api.routes() {
 			for _, endpoint := range routes {
-				app.mux.Handle(endpoint.Method(), api.Prefix()+path, APIHandler(endpoint.Handler(), api, path, endpoint.Method(), app.LogLevel()))
+				app.mux.Handle(endpoint.Method(), api.prefix()+path, APIHandler(endpoint.Handler(), api, path, endpoint.Method(), app.LogLevel()))
 			}
 		}
 	}

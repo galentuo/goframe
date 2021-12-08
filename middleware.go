@@ -14,10 +14,9 @@ package goframe
 */
 type MiddlewareFunc func(HandlerFunction) HandlerFunction
 
-// Use the specified Middleware for the App.
-// When defined on a `HTTPService` the specified middleware will be
-// inherited by any `Group` calls that are made on that on
-// the HTTPService.
+// Use the specified Middleware for the `HTTPService`.
+// The specified middleware will be inherited by any calls
+// that are made on the HTTPService.
 func (ms *MiddlewareStack) Use(mw ...MiddlewareFunc) {
 	ms.stack = append(ms.stack, mw...)
 }

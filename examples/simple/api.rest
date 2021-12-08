@@ -1,0 +1,14 @@
+GET http://localhost:8080/user/3 HTTP/1.1
+Authorization: 
+X-Request-LogLevel: debug
+
+###
+
+PUT http://localhost:8080/user/3 HTTP/1.1
+Authorization: 
+X-Request-LogLevel: debug
+
+{
+    "name": "Jain",
+    "email": "jain@mindhelix.com"
+}
