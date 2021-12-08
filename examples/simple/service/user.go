@@ -4,20 +4,19 @@ import (
 	"encoding/json"
 	"strconv"
 
-	frame "github.com/galento/goframe"
-	"github.com/galento/goframe/examples/simple/pkg/store"
-	"github.com/galentuo/goframe"
+	frame "github.com/galentuo/goframe"
+	"github.com/galentuo/goframe/examples/simple/pkg/store"
 	"github.com/gorilla/mux"
 )
 
 type UserService struct {
-	*goframe.HTTPServer
+	*frame.HTTPServer
 	store UserInterface
 }
 
 func NewUserService() *UserService {
 	srv := UserService{
-		HTTPServer: goframe.NewHTTPService("user"),
+		HTTPServer: frame.NewHTTPService("user"),
 		store:      store.NewUserStore(),
 	}
 	srv.Route("/{userID:[0-9]+}", "GET", srv.GetUser)
@@ -25,20 +24,18 @@ func NewUserService() *UserService {
 	return &srv
 }
 
-func (us *UserService) GetUser(c frame.APIContext) error {
+func (us *UserService) GetUser(c frame.ServerContext) error {
 	vars := mux.Vars(c.Request())
 	_userID := vars["userID"]
 	userID, _ := strconv.ParseInt(_userID, 10, 64)
-	user, err := us.store.Get(&c, userID)
+	user, err := us.store.Get(c, userID)
 	if err != nil {
-		c.Response().JSON(404, frame.ERROR, nil, "user not found")
-		return nil
+		return c.Response().ErrorJSON(frame.NewInternalError(404, "user-001", "user not found"))
 	}
-	c.Response().JSON(200, frame.OK, user, "")
-	return nil
+	return c.Response().SuccessJSON(200, user, "")
 }
 
-func (us *UserService) PutUser(c frame.APIContext) error {
+func (us *UserService) PutUser(c frame.ServerContext) error {
 	vars := mux.Vars(c.Request())
 	_userID := vars["userID"]
 	userID, _ := strconv.ParseInt(_userID, 10, 64)
@@ -49,19 +46,18 @@ func (us *UserService) PutUser(c frame.APIContext) error {
 	var u userReq
 	decoder := json.NewDecoder(c.Request().Body)
 	if err := decoder.Decode(&u); err != nil {
-		c.Response().JSON(500, frame.ERROR, nil, "invalid request")
-		return nil
+		return c.Response().ErrorJSON(
+			frame.NewInternalError(500, "simple-001", "invalid request"))
 	}
-	err := us.store.Insert(&c, store.User{
+	err := us.store.Insert(c, store.User{
 		ID:      userID,
 		Name:    u.Name,
 		Email:   u.Email,
 		Enabled: true,
 	})
 	if err != nil {
-		c.Response().JSON(500, frame.ERROR, nil, "failed to insert user")
-		return nil
+		return c.Response().ErrorJSON(
+			frame.NewInternalError(500, "user-002", "failed to insert user"))
 	}
-	c.Response().JSON(201, frame.OK, nil, "inserted user")
-	return nil
+	return c.Response().SuccessJSON(201, nil, "inserted user")
 }

@@ -1,8 +1,8 @@
 package service
 
 import (
-	frame "github.com/galento/goframe"
-	"github.com/galento/goframe/examples/simple/pkg/store"
+	frame "github.com/galentuo/goframe"
+	"github.com/galentuo/goframe/examples/simple/pkg/store"
 )
 
 type UserInterface interface {
