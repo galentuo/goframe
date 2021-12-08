@@ -9,10 +9,10 @@ import (
 func main() {
 	app := goframe.NewApp("hello", true, nil)
 
-	service1 := goframe.NewHTTPService("world")
+	service1 := goframe.NewHTTPServer("world")
 	service1.Route("/", "GET", HelloHandler)
 
-	service2 := goframe.NewHTTPService("service2")
+	service2 := goframe.NewHTTPServer("service2")
 	service2.Route("/get", "GET", Service2Handler)
 
 	app.Register(service1)

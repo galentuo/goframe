@@ -90,7 +90,7 @@ func (dhs *HTTPServer) Route(path, httpMethod string, handler HandlerFunction) {
 	dhs.routeMap[path] = endpoints
 }
 
-func NewHTTPService(name string) *HTTPServer {
+func NewHTTPServer(name string) *HTTPServer {
 	ds := newService(name)
 	routeMap := make(map[string][]EndPoint)
 	var mwf []MiddlewareFunc

@@ -16,7 +16,7 @@ type UserService struct {
 
 func NewUserService() *UserService {
 	srv := UserService{
-		HTTPServer: frame.NewHTTPService("user"),
+		HTTPServer: frame.NewHTTPServer("user"),
 		store:      store.NewUserStore(),
 	}
 	srv.Route("/{userID:[0-9]+}", "GET", srv.GetUser)
