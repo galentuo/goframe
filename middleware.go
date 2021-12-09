@@ -1,6 +1,6 @@
 package goframe
 
-// MiddlewareFunc defines the interface for a piece of Buffalo
+// MiddlewareFunc defines the interface for a piece of goframe
 // Middleware.
 /*
 	func DoSomething(next HandlerFunction) HandlerFunction {
