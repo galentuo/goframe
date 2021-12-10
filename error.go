@@ -34,8 +34,8 @@ func (e internalError) CustomError(customMessage string) internalError {
 }
 
 // NewInternalError is used to define a new internal error
-func NewInternalError(httpCode int, errCode string, errMessage string) internalError {
-	return internalError{
+func NewInternalError(httpCode int, errCode string, errMessage string) *internalError {
+	return &internalError{
 		httpCode: httpCode,
 		errCode:  errCode,
 		message:  errMessage,
