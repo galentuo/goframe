@@ -9,14 +9,14 @@ import (
 )
 
 type UserService struct {
-	*frame.HTTPServer
+	frame.HTTPService
 	store UserInterface
 }
 
 func NewUserService() *UserService {
 	srv := UserService{
-		HTTPServer: frame.NewHTTPServer("user"),
-		store:      store.NewUserStore(),
+		HTTPService: frame.NewHTTPService("user"),
+		store:       store.NewUserStore(),
 	}
 	srv.Route("/{userID:[0-9]+}", "GET", srv.GetUser)
 	srv.Route("/{userID:[0-9]+}", "PUT", srv.PutUser)

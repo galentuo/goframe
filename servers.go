@@ -6,43 +6,43 @@ import (
 	"github.com/galentuo/goframe/logger"
 )
 
-// assert Server satisfies Service interface
-var _ Service = &Server{}
+// assert Service_ satisfies Service interface
+var _ Service = &Service_{}
 
-type Server struct {
+type Service_ struct {
 	name     string
 	logLevel string
 }
 
-func (ds Server) Name() string {
+func (ds Service_) Name() string {
 	return ds.name
 }
 
-func (ds Server) loglevel() string {
+func (ds Service_) loglevel() string {
 	return ds.logLevel
 }
 
-func (ds *Server) SetLogLevel(ll logger.LogLevel) {
+func (ds *Service_) SetLogLevel(ll logger.LogLevel) {
 	ds.logLevel = ll.String()
 }
 
-func newService(name string) Server {
-	return Server{
+func newService(name string) Service_ {
+	return Service_{
 		name: name,
 	}
 }
 
-// assert Server satisfies Service interface
-var _ HTTPService = &HTTPServer{}
+// assert Service_ satisfies Service interface
+var _ HTTPService = &HTTPService_{}
 
-type HTTPServer struct {
-	*Server
+type HTTPService_ struct {
+	*Service_
 	pathPrefix      string
 	routeMap        map[string][]EndPoint
 	middlewareStack *MiddlewareStack
 }
 
-func (dhs *HTTPServer) prefix() string {
+func (dhs *HTTPService_) prefix() string {
 	if dhs.pathPrefix == "" {
 		return fmt.Sprintf("/%s", dhs.name)
 	}
@@ -52,27 +52,27 @@ func (dhs *HTTPServer) prefix() string {
 // CustomPrefix replaces the default path prefix by the
 // custom one passed in. The routes on the service
 // would have the `Service Name` as a default prefix.
-func (dhs *HTTPServer) CustomPrefix(prefix string) {
+func (dhs *HTTPService_) CustomPrefix(prefix string) {
 	dhs.pathPrefix = prefix
 }
 
-func (dhs *HTTPServer) routes() map[string][]EndPoint {
+func (dhs *HTTPService_) routes() map[string][]EndPoint {
 	return dhs.routeMap
 }
 
-func (dhs *HTTPServer) middleware() *MiddlewareStack {
+func (dhs *HTTPService_) middleware() *MiddlewareStack {
 	return dhs.middlewareStack
 }
 
 // Use the specified Middleware for the `HTTPService`.
 // The specified middleware will be inherited by any calls
 // that are made on the HTTPService.
-func (dhs *HTTPServer) Use(mw ...MiddlewareFunc) {
+func (dhs *HTTPService_) Use(mw ...MiddlewareFunc) {
 	dhs.middlewareStack.Use(mw...)
 }
 
 // Route maps a HTTP method request to the path and the specified handler.
-func (dhs *HTTPServer) Route(path, httpMethod string, handler HandlerFunction) {
+func (dhs *HTTPService_) Route(path, httpMethod string, handler HandlerFunction) {
 	endpoint := EndPoint{
 		httpMethod:      httpMethod,
 		handlerFunction: handler,
@@ -90,15 +90,15 @@ func (dhs *HTTPServer) Route(path, httpMethod string, handler HandlerFunction) {
 	dhs.routeMap[path] = endpoints
 }
 
-func NewHTTPServer(name string) *HTTPServer {
+func NewHTTPService(name string) *HTTPService_ {
 	ds := newService(name)
 	routeMap := make(map[string][]EndPoint)
 	var mwf []MiddlewareFunc
 	mws := MiddlewareStack{
 		stack: mwf,
 	}
-	dhs := HTTPServer{
-		Server:          &ds,
+	dhs := HTTPService_{
+		Service_:        &ds,
 		routeMap:        routeMap,
 		middlewareStack: &mws,
 	}
