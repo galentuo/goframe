@@ -53,7 +53,7 @@ type DefaultServerContext struct {
 }
 
 func (dsc *DefaultServerContext) Response() ResponseWriter {
-	return DefaultResponseWriter{
+	return &DefaultResponseWriter{
 		res: dsc.res,
 	}
 }

@@ -14,21 +14,21 @@ type DefaultResponseWriter struct {
 }
 
 type standardJSONResponse struct {
-	Status    bool        `json:"status"`
+	Success   bool        `json:"success"`
 	Data      interface{} `json:"data,omitempty"`
 	Message   string      `json:"message,omitempty"`
 	ErrorCode string      `json:"error_code,omitempty"`
 }
 
-func (drw DefaultResponseWriter) Generic(httpCode int, data []byte) error {
+func (drw *DefaultResponseWriter) Generic(httpCode int, data []byte) error {
 	drw.res.WriteHeader(httpCode)
 	drw.res.Write(data)
 	return nil
 }
 
-func (drw DefaultResponseWriter) SuccessJSON(httpCode int, data interface{}, message string) error {
+func (drw *DefaultResponseWriter) SuccessJSON(httpCode int, data interface{}, message string) error {
 	responseJson := standardJSONResponse{
-		Status:  true,
+		Success: true,
 		Data:    data,
 		Message: message,
 	}
@@ -44,9 +44,9 @@ func (drw DefaultResponseWriter) SuccessJSON(httpCode int, data interface{}, mes
 	return nil
 }
 
-func (drw DefaultResponseWriter) ErrorJSON(err error) error {
+func (drw *DefaultResponseWriter) ErrorJSON(err error) error {
 	responseJson := standardJSONResponse{
-		Status: false,
+		Success: false,
 	}
 	httpCode := int(500)
 
