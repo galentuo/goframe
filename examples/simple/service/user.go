@@ -6,7 +6,6 @@ import (
 
 	frame "github.com/galentuo/goframe"
 	"github.com/galentuo/goframe/examples/simple/pkg/store"
-	"github.com/gorilla/mux"
 )
 
 type UserService struct {
@@ -25,8 +24,7 @@ func NewUserService() *UserService {
 }
 
 func (us *UserService) GetUser(c frame.ServerContext) error {
-	vars := mux.Vars(c.Request())
-	_userID := vars["userID"]
+	_userID := c.Param("userID")
 	userID, _ := strconv.ParseInt(_userID, 10, 64)
 	user, err := us.store.Get(c, userID)
 	if err != nil {
@@ -36,8 +34,7 @@ func (us *UserService) GetUser(c frame.ServerContext) error {
 }
 
 func (us *UserService) PutUser(c frame.ServerContext) error {
-	vars := mux.Vars(c.Request())
-	_userID := vars["userID"]
+	_userID := c.Param("userID")
 	userID, _ := strconv.ParseInt(_userID, 10, 64)
 	type userReq struct {
 		Name  *string `json:"name"`
