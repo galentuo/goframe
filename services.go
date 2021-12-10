@@ -27,6 +27,15 @@ type HTTPService interface {
 	// The specified middleware will be inherited by any calls
 	// that are made on the HTTPService.
 	Use(mw ...MiddlewareFunc)
+	// Group creates a new `HTTPService` that inherits from it's parent `HTTPService`.
+	// This is useful for creating groups of end-points that need to share
+	// common functionality, like middleware.
+	/*
+		g := a.Group()
+		g.Use(AuthorizeAPIMiddleware)
+	*/
+	NewGroup() *httpService
+	getChildren() []*httpService
 }
 
 // HandlerFunction is the basis for a HTTPService Endpoint. A Handler

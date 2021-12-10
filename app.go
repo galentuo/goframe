@@ -91,6 +91,9 @@ func (app *App) Register(_svc Service) {
 				app.mux.Handle(endpoint.Method(), api.prefix()+path, APIHandler(endpoint.Handler(), api, path, endpoint.Method(), app.LogLevel()))
 			}
 		}
+		for _, each := range api.getChildren() {
+			app.Register(each)
+		}
 	}
 
 	if bg != nil {

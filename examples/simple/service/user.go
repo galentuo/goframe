@@ -9,8 +9,8 @@ import (
 )
 
 type UserService struct {
-	frame.HTTPService
-	store UserInterface
+	Service frame.HTTPService
+	store   UserInterface
 }
 
 var (
@@ -18,13 +18,17 @@ var (
 )
 
 func NewUserService() *UserService {
-	srv := UserService{
-		HTTPService: frame.NewHTTPService("user"),
-		store:       store.NewUserStore(),
+	srv := frame.NewHTTPService("user")
+	srv.Use(m1)
+	us := UserService{
+		Service: srv,
+		store:   store.NewUserStore(),
 	}
-	srv.Route("/{userID:[0-9]+}", "GET", srv.GetUser)
-	srv.Route("/{userID:[0-9]+}", "PUT", srv.PutUser)
-	return &srv
+	g := srv.NewGroup()
+	g.Use(m2)
+	srv.Route("/{userID:[0-9]+}", "GET", us.GetUser)
+	g.Route("/{userID:[0-9]+}", "PUT", us.PutUser)
+	return &us
 }
 
 func (us *UserService) GetUser(c frame.ServerContext) error {
