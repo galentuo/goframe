@@ -7,6 +7,15 @@ import (
 	"github.com/spf13/viper"
 )
 
+type ConfigReader interface {
+	GetString(key string) string
+	GetBool(key string) bool
+	GetInt(key string) int
+	GetStringSlice(key string) []string
+	GetIntSlice(key string) []int
+	GetStringMap(key string) map[string]interface{}
+}
+
 type configReader struct {
 	v *viper.Viper
 }
