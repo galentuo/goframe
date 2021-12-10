@@ -20,7 +20,7 @@ func init() {
 type App struct {
 	ll     logger.LogLevel
 	name   string
-	config *configReader
+	config ConfigReader
 	mux    Router
 }
 
@@ -42,7 +42,7 @@ func (a *App) CustomCoreLogger(cl_ *logger.CoreLogger) {
 // * While using env vars, `_` would be the default seperator.
 // * The env vars would have the app name as a default prefix.
 // * eg. for app name "simple" -> simple_server_host
-func (a *App) Config() *configReader { return a.config }
+func (a *App) Config() ConfigReader { return a.config }
 
 // App is where it all happens!
 //
@@ -51,9 +51,9 @@ func (a *App) Config() *configReader { return a.config }
 // to the former and vice versa. In other words, your application will always
 // see the path as specified in the route.
 //
-// configReader is a nullable field; if null it uses a default
+// ConfigReader is a nullable field; if null it uses a default
 // configReader = NewConfigReader(app.name, "./configs/", app.name, "_")
-func NewApp(name string, strictSlash bool, cr *configReader) *App {
+func NewApp(name string, strictSlash bool, cr ConfigReader) *App {
 	if cr == nil {
 		cr = NewConfigReader(name, "./configs/", name, "_")
 	}

@@ -6,10 +6,7 @@ import (
 	"net/http"
 )
 
-// assert that DefaultResponseWriter implementations is fulfilling its interface
-var _ ResponseWriter = &DefaultResponseWriter{}
-
-type DefaultResponseWriter struct {
+type defaultResponseWriter struct {
 	res http.ResponseWriter
 }
 
@@ -20,13 +17,13 @@ type standardJSONResponse struct {
 	ErrorCode string      `json:"error_code,omitempty"`
 }
 
-func (drw *DefaultResponseWriter) Generic(httpCode int, data []byte) error {
+func (drw *defaultResponseWriter) Generic(httpCode int, data []byte) error {
 	drw.res.WriteHeader(httpCode)
 	drw.res.Write(data)
 	return nil
 }
 
-func (drw *DefaultResponseWriter) SuccessJSON(httpCode int, data interface{}, message string) error {
+func (drw *defaultResponseWriter) SuccessJSON(httpCode int, data interface{}, message string) error {
 	responseJson := standardJSONResponse{
 		Success: true,
 		Data:    data,
@@ -44,7 +41,7 @@ func (drw *DefaultResponseWriter) SuccessJSON(httpCode int, data interface{}, me
 	return nil
 }
 
-func (drw *DefaultResponseWriter) ErrorJSON(err error) error {
+func (drw *defaultResponseWriter) ErrorJSON(err error) error {
 	responseJson := standardJSONResponse{
 		Success: false,
 	}
