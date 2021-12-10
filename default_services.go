@@ -6,9 +6,6 @@ import (
 	"github.com/galentuo/goframe/logger"
 )
 
-// assert service satisfies Service interface
-var _ Service = &service{}
-
 type service struct {
 	name     string
 	logLevel string
@@ -31,9 +28,6 @@ func newService(name string) service {
 		name: name,
 	}
 }
-
-// assert service satisfies Service interface
-var _ HTTPService = &httpService{}
 
 type httpService struct {
 	*service
