@@ -100,11 +100,12 @@ func NewHTTPService(name string) *httpService {
 	return &dhs
 }
 
-// Group creates a new `HTTPService` that inherits from it's parent `HTTPService`.
+// Group creates a new `HTTPService` that inherits from it's parent HTTPService.
 // This is useful for creating groups of end-points that need to share
 // common functionality, like middleware.
 /*
-	g := a.Group()
+	a := NewHTTPService("a")
+	g := a.NewGroup()
 	g.Use(AuthorizeAPIMiddleware)
 */
 func (dhs *httpService) NewGroup() *httpService {

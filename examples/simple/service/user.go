@@ -20,14 +20,16 @@ var (
 func NewUserService() *UserService {
 	srv := frame.NewHTTPService("user")
 	srv.Use(m1)
+	g := srv.NewGroup()
+	g.Use(m2)
+
 	us := UserService{
 		Service: srv,
 		store:   store.NewUserStore(),
 	}
-	g := srv.NewGroup()
-	g.Use(m2)
 	srv.Route("/{userID:[0-9]+}", "GET", us.GetUser)
 	g.Route("/{userID:[0-9]+}", "PUT", us.PutUser)
+
 	return &us
 }
 
