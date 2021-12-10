@@ -11,11 +11,11 @@ type service struct {
 	logLevel string
 }
 
-func (ds service) Name() string {
+func (ds *service) Name() string {
 	return ds.name
 }
 
-func (ds service) loglevel() string {
+func (ds *service) loglevel() string {
 	return ds.logLevel
 }
 
@@ -34,6 +34,7 @@ type httpService struct {
 	pathPrefix      string
 	routeMap        map[string][]EndPoint
 	middlewareStack *MiddlewareStack
+	children        []*httpService
 }
 
 func (dhs *httpService) prefix() string {
@@ -97,4 +98,32 @@ func NewHTTPService(name string) *httpService {
 		middlewareStack: &mws,
 	}
 	return &dhs
+}
+
+// Group creates a new `HTTPService` that inherits from it's parent `HTTPService`.
+// This is useful for creating groups of end-points that need to share
+// common functionality, like middleware.
+/*
+	g := a.Group()
+	g.Use(AuthorizeAPIMiddleware)
+*/
+func (dhs *httpService) NewGroup() *httpService {
+	ms := *dhs.middlewareStack
+	newHttpService := httpService{
+		service:         dhs.service,
+		pathPrefix:      dhs.pathPrefix,
+		routeMap:        make(map[string][]EndPoint),
+		middlewareStack: &ms,
+	}
+	children := []*httpService{}
+	if dhs.children != nil {
+		children = dhs.children
+	}
+	children = append(children, &newHttpService)
+	dhs.children = children
+	return &newHttpService
+}
+
+func (dhs *httpService) getChildren() []*httpService {
+	return dhs.children
 }

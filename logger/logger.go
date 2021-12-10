@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"fmt"
 	"os"
 	"strings"
 
@@ -106,7 +105,6 @@ func (l FieldLogger) Warning(msg string) {
 }
 
 func (l FieldLogger) Debug(msg string) {
-	fmt.Println("here")
 	if l.inner.level <= LogLevelDebug {
 		l.inner.coreLogger.Sugar().Debugw(msg, mapFieldsToArr(l.fields)...)
 	}

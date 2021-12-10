@@ -4,7 +4,7 @@ package goframe
 // Middleware.
 /*
 	func DoSomething(next HandlerFunction) HandlerFunction {
-		return func(c Context) error {
+		return func(c ServerContext) error {
 			// do something before calling the next handler
 			err := next(c)
 			// do something after call the handler
@@ -33,9 +33,11 @@ func (ms *MiddlewareStack) handler(h HandlerFunction) HandlerFunction {
 		}
 
 		tstack := []MiddlewareFunc{mh}
+		tstack = append(tstack, ms.stack...)
 		for _, mw := range tstack {
 			h = mw(h)
 		}
+		return h
 	}
 	return h
 }
