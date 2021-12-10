@@ -3,6 +3,7 @@ package goframe
 import (
 	"context"
 	"net/http"
+	"net/url"
 	"sync"
 
 	"github.com/galentuo/goframe/logger"
@@ -46,18 +47,31 @@ func (dbc DefaultContext) Get(key interface{}) interface{} {
 // implementation of the Context interface.
 type DefaultServerContext struct {
 	*DefaultContext
-	req *http.Request
-	res http.ResponseWriter
+	req    *http.Request
+	res    http.ResponseWriter
+	params url.Values
 }
 
-func (dsc DefaultServerContext) Response() ResponseWriter {
+func (dsc *DefaultServerContext) Response() ResponseWriter {
 	return DefaultResponseWriter{
 		res: dsc.res,
 	}
 }
 
-func (dsc DefaultServerContext) Request() *http.Request {
+func (dsc *DefaultServerContext) Request() *http.Request {
 	return dsc.req
+}
+
+// Params returns all of the parameters for the request,
+// including both named params and query string parameters.
+func (dsc *DefaultServerContext) Params() url.Values {
+	return dsc.params
+}
+
+// Param returns a param, either named or query string,
+// based on the key.
+func (d *DefaultServerContext) Param(key string) string {
+	return d.Params().Get(key)
 }
 
 func NewContext(ctx context.Context, cl *logger.CoreLogger, ll logger.LogLevel) *DefaultContext {
@@ -69,7 +83,7 @@ func NewContext(ctx context.Context, cl *logger.CoreLogger, ll logger.LogLevel) 
 	return &dbc
 }
 
-func NewServerContext(ctx context.Context, ll logger.LogLevel, res http.ResponseWriter, req *http.Request) DefaultServerContext {
+func NewServerContext(ctx context.Context, ll logger.LogLevel, res http.ResponseWriter, req *http.Request) *DefaultServerContext {
 	llh := req.Header.Get("X-Request-LogLevel")
 	if llh == "debug" {
 		ll = logger.LogLevelDebug
@@ -81,5 +95,5 @@ func NewServerContext(ctx context.Context, ll logger.LogLevel, res http.Response
 		req:            req,
 	}
 
-	return dsc
+	return &dsc
 }

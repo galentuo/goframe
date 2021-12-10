@@ -4,11 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/felixge/httpsnoop"
 	"github.com/galentuo/goframe/logger"
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 )
 
 func APIHandler(hf HandlerFunction, api HTTPService, path, method string, ll logger.LogLevel) http.Handler {
@@ -36,6 +38,25 @@ func APIHandler(hf HandlerFunction, api HTTPService, path, method string, ll log
 		if reqID == "" {
 			reqID = uuid.New().String()
 		}
+
+		// Parse URL Params
+		params := url.Values{}
+		vars := mux.Vars(r)
+		for k, v := range vars {
+			params.Add(k, v)
+		}
+		// Parse URL Query String Params
+		// For POST, PUT, and PATCH requests, it also parse the request body as a form.
+		// Request body parameters take precedence over URL query string values in params
+		if err := r.ParseForm(); err == nil {
+			for k, v := range r.Form {
+				for _, vv := range v {
+					params.Add(k, vv)
+				}
+			}
+		}
+		ctx.params = params
+
 		ctx.Set("service", api.Name())
 		ctx.Set("req_id", reqID)
 		log.SetField("req_id", reqID).
