@@ -9,14 +9,18 @@ import (
 )
 
 type UserService struct {
-	*frame.HTTPServer
+	frame.HTTPService
 	store UserInterface
 }
 
+var (
+	ErrUserNotFound = frame.NewInternalError(404, "user-001", "user not found")
+)
+
 func NewUserService() *UserService {
 	srv := UserService{
-		HTTPServer: frame.NewHTTPServer("user"),
-		store:      store.NewUserStore(),
+		HTTPService: frame.NewHTTPService("user"),
+		store:       store.NewUserStore(),
 	}
 	srv.Route("/{userID:[0-9]+}", "GET", srv.GetUser)
 	srv.Route("/{userID:[0-9]+}", "PUT", srv.PutUser)
@@ -28,7 +32,7 @@ func (us *UserService) GetUser(c frame.ServerContext) error {
 	userID, _ := strconv.ParseInt(_userID, 10, 64)
 	user, err := us.store.Get(c, userID)
 	if err != nil {
-		return c.Response().ErrorJSON(frame.NewInternalError(404, "user-001", "user not found"))
+		return c.Response().ErrorJSON(ErrUserNotFound.MoreDetailed("userID:", _userID))
 	}
 	return c.Response().SuccessJSON(200, user, "")
 }

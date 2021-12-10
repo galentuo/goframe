@@ -1,5 +1,7 @@
 package goframe
 
+import "fmt"
+
 type internalError struct {
 	httpCode int
 	errCode  string
@@ -27,10 +29,10 @@ func (e internalError) Message() string {
 }
 
 // CustomError returns an instance of error e with custom message
-func (e internalError) CustomError(customMessage string) internalError {
+func (e internalError) MoreDetailed(additionalDetails ...string) *internalError {
 	e_ := e
-	e_.message = customMessage
-	return e_
+	e_.message = fmt.Sprintf("%s; %v", e.message, additionalDetails)
+	return &e_
 }
 
 // NewInternalError is used to define a new internal error
