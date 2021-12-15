@@ -1,4 +1,5 @@
 # goframe
+[![Go Report Card](https://goreportcard.com/badge/github.com/galentuo/goframe)](https://goreportcard.com/report/github.com/galentuo/goframe)
 
 * based on: [frame](https://github.com/j4in/frame)
 
