@@ -10,7 +10,7 @@ type health struct {
 	goframe.HTTPService
 }
 
-func HealthService(appName string) *health {
+func Service(appName string) *health {
 	srv := goframe.NewHTTPService("")
 	srv.Route("/", "GET", func(ctx goframe.ServerContext) error {
 		data := make(map[string]interface{})
