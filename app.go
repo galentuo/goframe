@@ -37,9 +37,9 @@ func (a *App) CustomCoreLogger(cl_ *logger.CoreLogger) {
 //
 // Defaults:
 // * The default config reader expects the config files
-// to be kept inside configs/ dir in app root dir.
+// 	 to be kept inside configs/ dir in app root dir.
 // * The name of the app would be the default expected config file name.
-// * While using env vars, `_` would be the default seperator.
+// * While using env vars, `_` would be the default separator.
 // * The env vars would have the app name as a default prefix.
 // * eg. for app name "simple" -> simple_server_host
 func (a *App) Config() ConfigReader { return a.config }

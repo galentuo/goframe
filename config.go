@@ -20,7 +20,7 @@ type configReader struct {
 	v *viper.Viper
 }
 
-func NewConfigReader(fileName, configPath, envPrefix, envSeperatorChar string) *configReader {
+func NewConfigReader(fileName, configPath, envPrefix, envSeparatorChar string) *configReader {
 	v := viper.New()
 	v.SetConfigName(fileName)
 	v.AddConfigPath(configPath)
@@ -31,7 +31,7 @@ func NewConfigReader(fileName, configPath, envPrefix, envSeperatorChar string) *
 	v.SetEnvPrefix(envPrefix)
 
 	// Define Replacer
-	replacer := strings.NewReplacer(".", envSeperatorChar)
+	replacer := strings.NewReplacer(".", envSeparatorChar)
 	v.SetEnvKeyReplacer(replacer)
 	v.AutomaticEnv()
 
