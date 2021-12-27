@@ -38,6 +38,7 @@ func APIHandler(hf HandlerFunction, api HTTPService, path, method string, ll log
 		if reqID == "" {
 			reqID = uuid.New().String()
 		}
+		w.Header().Add("X-Request-ID", reqID)
 
 		// Parse URL Params
 		params := url.Values{}
