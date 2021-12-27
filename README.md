@@ -21,5 +21,5 @@ import "github.com/galentuo/goframe"
 
 ## Examples
 
-- [HelloWorld Server](https://github.com/galentuo/goframe-examples/tree/main/hello)
-- [A simple REST API](https://github.com/galentuo/goframe-examples/tree/main/simple)
+- [HelloWorld Server](https://github.com/galentuo/goframe-examples/tree/master/hello)
+- [A simple REST API](https://github.com/galentuo/goframe-examples/tree/master/simple)
