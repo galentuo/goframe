@@ -1,11 +1,17 @@
 package goframe
 
-import "github.com/galentuo/goframe/logger"
+import (
+	"sync"
+)
 
 type Service interface {
+	// Name is the name of the service;
+	// this would be the prefix in case of HTTPService
 	Name() string
-	loglevel() string
-	SetLogLevel(logger.LogLevel)
+	// SetInCtx sets required data into the service context;
+	// It can be used to pass env elements like connections, configs, etc.
+	SetInCtx(key string, value interface{})
+	getCtxData() *sync.Map
 }
 
 type BackgroundService interface {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"sync"
 	"time"
 
 	"github.com/felixge/httpsnoop"
@@ -13,7 +14,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func APIHandler(hf HandlerFunction, api HTTPService, path, method string, ll logger.LogLevel) http.Handler {
+func APIHandler(hf HandlerFunction, api HTTPService, path, method string, ll logger.LogLevel, env *sync.Map) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		rl := &responseLogger{w: w, status: http.StatusOK}
 		w = httpsnoop.Wrap(w, httpsnoop.Hooks{
@@ -25,7 +26,10 @@ func APIHandler(hf HandlerFunction, api HTTPService, path, method string, ll log
 			},
 		})
 		ctx := NewServerContext(r.Context(), ll, w, r)
-
+		env.Range(func(key, value interface{}) bool {
+			ctx.Set(fmt.Sprint(key), value)
+			return true
+		})
 		t := time.Now()
 
 		defer func() {

@@ -69,9 +69,6 @@ func NewApp(name string, strictSlash bool, cr ConfigReader) *App {
 }
 
 func (app *App) Register(_svc Service) {
-	if _svc.loglevel() == "" {
-		_svc.SetLogLevel(app.ll)
-	}
 	var (
 		api HTTPService
 		bg  BackgroundService
@@ -88,7 +85,7 @@ func (app *App) Register(_svc Service) {
 	if api != nil {
 		for path, routes := range api.routes() {
 			for _, endpoint := range routes {
-				app.mux.Handle(endpoint.Method(), api.prefix()+path, APIHandler(endpoint.Handler(), api, path, endpoint.Method(), app.LogLevel()))
+				app.mux.Handle(endpoint.Method(), api.prefix()+path, APIHandler(endpoint.Handler(), api, path, endpoint.Method(), app.LogLevel(), api.getCtxData()))
 			}
 		}
 		for _, each := range api.getChildren() {

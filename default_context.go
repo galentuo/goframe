@@ -68,7 +68,7 @@ func (d *defaultServerContext) Param(key string) string {
 	return d.Params().Get(key)
 }
 
-func NewContext(ctx context.Context, cl *logger.CoreLogger, ll logger.LogLevel) *defaultContext {
+func NewContext(ctx context.Context, ll logger.LogLevel) *defaultContext {
 	dbc := defaultContext{
 		data:    &sync.Map{},
 		Context: ctx,
@@ -82,7 +82,7 @@ func NewServerContext(ctx context.Context, ll logger.LogLevel, res http.Response
 	if llh == "debug" {
 		ll = logger.LogLevelDebug
 	}
-	dbc := NewContext(ctx, cl, ll)
+	dbc := NewContext(ctx, ll)
 	dsc := defaultServerContext{
 		defaultContext: dbc,
 		res:            res,

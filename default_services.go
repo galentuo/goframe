@@ -2,25 +2,24 @@ package goframe
 
 import (
 	"fmt"
-
-	"github.com/galentuo/goframe/logger"
+	"sync"
 )
 
 type service struct {
-	name     string
-	logLevel string
+	name string
+	env  *sync.Map
 }
 
 func (ds *service) Name() string {
 	return ds.name
 }
 
-func (ds *service) loglevel() string {
-	return ds.logLevel
+func (ds *service) SetInCtx(key string, value interface{}) {
+	ds.env.Store(key, value)
 }
 
-func (ds *service) SetLogLevel(ll logger.LogLevel) {
-	ds.logLevel = ll.String()
+func (ds *service) getCtxData() *sync.Map {
+	return ds.env
 }
 
 func newService(name string) service {
