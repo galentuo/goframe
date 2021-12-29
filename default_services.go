@@ -25,6 +25,7 @@ func (ds *service) getCtxData() *sync.Map {
 func newService(name string) service {
 	return service{
 		name: name,
+		env:  &sync.Map{},
 	}
 }
 
