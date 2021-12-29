@@ -23,3 +23,4 @@ import "github.com/galentuo/goframe"
 
 - [HelloWorld Server](https://github.com/galentuo/goframe-examples/tree/master/hello)
 - [A simple REST API](https://github.com/galentuo/goframe-examples/tree/master/simple)
+- [A structured Project](https://github.com/galentuo/goframe-examples/tree/master/project)
