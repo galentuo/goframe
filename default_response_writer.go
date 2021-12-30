@@ -50,7 +50,7 @@ func (drw *defaultResponseWriter) ErrorJSON(err error) error {
 	}
 	httpCode := int(500)
 
-	if ie, ok := err.(*internalError); ok {
+	if ie, ok := err.(*goframeError); ok {
 		httpCode = ie.HttpCode()
 		responseJson.ErrorCode = ie.ErrCode()
 		responseJson.Message = ie.Message()
