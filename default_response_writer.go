@@ -17,12 +17,14 @@ type standardJSONResponse struct {
 	ErrorCode string      `json:"error_code,omitempty"`
 }
 
+// Generic is used to write data([]byte) as the http response
 func (drw *defaultResponseWriter) Generic(httpCode int, data []byte) error {
 	drw.res.WriteHeader(httpCode)
 	drw.res.Write(data)
 	return nil
 }
 
+// SuccessJSON is used to write data as response to a successful http request.
 func (drw *defaultResponseWriter) SuccessJSON(httpCode int, data interface{}, message string) error {
 	responseJson := standardJSONResponse{
 		Success: true,
@@ -41,6 +43,7 @@ func (drw *defaultResponseWriter) SuccessJSON(httpCode int, data interface{}, me
 	return nil
 }
 
+// SuccessJSON is used to write err as response to a unsuccessful http request.
 func (drw *defaultResponseWriter) ErrorJSON(err error) error {
 	responseJson := standardJSONResponse{
 		Success: false,

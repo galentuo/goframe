@@ -14,7 +14,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func APIHandler(hf HandlerFunction, api HTTPService, path, method string, ll logger.LogLevel, env *sync.Map) http.Handler {
+func apiHandler(hf HandlerFunction, api HTTPService, path, method string, ll logger.LogLevel, env *sync.Map) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		rl := &responseLogger{w: w, status: http.StatusOK}
 		w = httpsnoop.Wrap(w, httpsnoop.Hooks{

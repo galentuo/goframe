@@ -21,7 +21,7 @@ func (ms *MiddlewareStack) Use(mw ...MiddlewareFunc) {
 	ms.stack = append(ms.stack, mw...)
 }
 
-// MiddlewareStack manages the middleware stack for an App/Group.
+// MiddlewareStack manages the middleware stack for an app/Group.
 type MiddlewareStack struct {
 	stack []MiddlewareFunc
 }

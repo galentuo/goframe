@@ -37,8 +37,8 @@ func (dbc defaultContext) Get(key interface{}) interface{} {
 	return dbc.Context.Value(key)
 }
 
-// defaultContext is, as its name implies, a default
-// implementation of the Context interface.
+// defaultServerContext is, as its name implies, a default
+// implementation of the ServerContext interface.
 type defaultServerContext struct {
 	*defaultContext
 	req    *http.Request
@@ -46,12 +46,14 @@ type defaultServerContext struct {
 	params url.Values
 }
 
+// Response returns goframe.ResponseWriter
 func (dsc *defaultServerContext) Response() ResponseWriter {
 	return &defaultResponseWriter{
 		res: dsc.res,
 	}
 }
 
+// Request returns *http.Request
 func (dsc *defaultServerContext) Request() *http.Request {
 	return dsc.req
 }
@@ -68,6 +70,8 @@ func (d *defaultServerContext) Param(key string) string {
 	return d.Params().Get(key)
 }
 
+// NewContext is used to get an instance of the default implementation
+// of goframe.Context
 func NewContext(ctx context.Context, ll logger.LogLevel) *defaultContext {
 	dbc := defaultContext{
 		data:    &sync.Map{},
@@ -77,6 +81,8 @@ func NewContext(ctx context.Context, ll logger.LogLevel) *defaultContext {
 	return &dbc
 }
 
+// NewServerContext is used to get an instance of the default implementation
+// of goframe.ServerContext
 func NewServerContext(ctx context.Context, ll logger.LogLevel, res http.ResponseWriter, req *http.Request) *defaultServerContext {
 	llh := req.Header.Get("X-Request-LogLevel")
 	if llh == "debug" {

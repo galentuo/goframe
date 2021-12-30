@@ -17,17 +17,17 @@ func init() {
 	cl = logger.NewCoreLogger()
 }
 
-type App struct {
+type app struct {
 	ll     logger.LogLevel
 	name   string
-	config ConfigReader
+	config Config
 	mux    Router
 }
 
-func (a *App) Name() string              { return a.name }
-func (a *App) LogLevel() logger.LogLevel { return a.ll }
+func (a *app) Name() string              { return a.name }
+func (a *app) LogLevel() logger.LogLevel { return a.ll }
 
-func (a *App) CustomCoreLogger(cl_ *logger.CoreLogger) {
+func (a *app) CustomCoreLogger(cl_ *logger.CoreLogger) {
 	cl = cl_
 }
 
@@ -42,22 +42,23 @@ func (a *App) CustomCoreLogger(cl_ *logger.CoreLogger) {
 // * While using env vars, `_` would be the default separator.
 // * The env vars would have the app name as a default prefix.
 // * eg. for app name "simple" -> simple_server_host
-func (a *App) Config() ConfigReader { return a.config }
+func (a *app) Config() Config { return a.config }
 
-// App is where it all happens!
+// NewApp returns an instance of app.
+// app is where it all happens!
 //
 // strictSlash defines the trailing slash behavior for new routes.
 // When true, if the route path is "/path/", accessing "/path" will perform a redirect
 // to the former and vice versa. In other words, your application will always
 // see the path as specified in the route.
 //
-// ConfigReader is a nullable field; if null it uses a default
+// Config is a nullable field; if null it uses a default
 // configReader = NewConfigReader(app.name, "./configs/", app.name, "_")
-func NewApp(name string, strictSlash bool, cr ConfigReader) *App {
+func NewApp(name string, strictSlash bool, cr Config) *app {
 	if cr == nil {
-		cr = NewConfigReader(name, "./configs/", name, "_")
+		cr = NewConfig(name, "./configs/", name, "_")
 	}
-	a := App{
+	a := app{
 		name:   name,
 		config: cr,
 		mux:    NewRouter(strictSlash),
@@ -68,7 +69,7 @@ func NewApp(name string, strictSlash bool, cr ConfigReader) *App {
 	return &a
 }
 
-func (app *App) Register(_svc Service) {
+func (app *app) Register(_svc Service) {
 	var (
 		api HTTPService
 		bg  BackgroundService
@@ -85,7 +86,7 @@ func (app *App) Register(_svc Service) {
 	if api != nil {
 		for path, routes := range api.routes() {
 			for _, endpoint := range routes {
-				app.mux.Handle(endpoint.Method(), api.prefix()+path, APIHandler(endpoint.Handler(), api, path, endpoint.Method(), app.LogLevel(), api.getCtxData()))
+				app.mux.Handle(endpoint.Method(), api.prefix()+path, apiHandler(endpoint.Handler(), api, path, endpoint.Method(), app.LogLevel(), api.getCtxData()))
 			}
 		}
 		for _, each := range api.getChildren() {
@@ -98,7 +99,7 @@ func (app *App) Register(_svc Service) {
 	}
 }
 
-func (app App) Start(host string, port int, readTimeout, writeTimeout time.Duration) error {
+func (app app) Start(host string, port int, readTimeout, writeTimeout time.Duration) error {
 	srv := &http.Server{
 		Handler: app.mux,
 		Addr:    host + ":" + strconv.Itoa(port),
