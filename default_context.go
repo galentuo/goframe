@@ -66,8 +66,8 @@ func (dsc *defaultServerContext) Params() url.Values {
 
 // Param returns a param, either named or query string,
 // based on the key.
-func (d *defaultServerContext) Param(key string) string {
-	return d.Params().Get(key)
+func (dsc *defaultServerContext) Param(key string) string {
+	return dsc.Params().Get(key)
 }
 
 // NewContext is used to get an instance of the default implementation

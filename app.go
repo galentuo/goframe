@@ -27,11 +27,11 @@ type app struct {
 func (a *app) Name() string              { return a.name }
 func (a *app) LogLevel() logger.LogLevel { return a.ll }
 
-func (a *app) CustomCoreLogger(cl_ *logger.CoreLogger) {
-	cl = cl_
+func (a *app) CustomCoreLogger(clIn *logger.CoreLogger) {
+	cl = clIn
 }
 
-// Config() returns the config reader.
+// Config returns the config reader.
 // Config values can be fetched by keys eg. "server.host".
 // In production configs can be stored as env vars.
 //
@@ -69,7 +69,7 @@ func NewApp(name string, strictSlash bool, cr Config) *app {
 	return &a
 }
 
-func (app *app) Register(_svc Service) {
+func (a *app) Register(_svc Service) {
 	var (
 		api HTTPService
 		bg  BackgroundService
@@ -86,11 +86,11 @@ func (app *app) Register(_svc Service) {
 	if api != nil {
 		for path, routes := range api.routes() {
 			for _, endpoint := range routes {
-				app.mux.Handle(endpoint.Method(), api.prefix()+path, apiHandler(endpoint.Handler(), api, path, endpoint.Method(), app.LogLevel(), api.getCtxData()))
+				a.mux.Handle(endpoint.Method(), api.prefix()+path, apiHandler(endpoint.Handler(), api, path, endpoint.Method(), a.LogLevel(), api.getCtxData()))
 			}
 		}
 		for _, each := range api.getChildren() {
-			app.Register(each)
+			a.Register(each)
 		}
 	}
 
@@ -99,9 +99,9 @@ func (app *app) Register(_svc Service) {
 	}
 }
 
-func (app app) Start(host string, port int, readTimeout, writeTimeout time.Duration) error {
+func (a *app) Start(host string, port int, readTimeout, writeTimeout time.Duration) error {
 	srv := &http.Server{
-		Handler: app.mux,
+		Handler: a.mux,
 		Addr:    host + ":" + strconv.Itoa(port),
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: writeTimeout,
