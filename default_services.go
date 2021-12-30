@@ -85,6 +85,8 @@ func (dhs *httpService) Route(path, httpMethod string, handler HandlerFunction) 
 	dhs.routeMap[path] = endpoints
 }
 
+// NewHTTPService creates a goframe HTTP Service;
+// where `name` would be the default prefix of the Router.
 func NewHTTPService(name string) *httpService {
 	ds := newService(name)
 	routeMap := make(map[string][]EndPoint)

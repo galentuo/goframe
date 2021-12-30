@@ -7,12 +7,22 @@ import (
 	"github.com/spf13/viper"
 )
 
-type ConfigReader interface {
+// Config is used to read the configs from config files or env variables.
+/*
+	config := NewConfig(fileName, configPath, envPrefix, envSeparatorChar)
+*/
+type Config interface {
+	// GetString gets a string config
 	GetString(key string) string
+	// GetBool gets a boolean config
 	GetBool(key string) bool
+	// GetInt gets an integer config
 	GetInt(key string) int
+	// GetStringSlice gets a string slice ([]string) config
 	GetStringSlice(key string) []string
+	// GetIntSlice gets an integer slice ([]int) config
 	GetIntSlice(key string) []int
+	// GetStringMap gets a string Map (map[string]interface{}) config
 	GetStringMap(key string) map[string]interface{}
 }
 
@@ -20,7 +30,12 @@ type configReader struct {
 	v *viper.Viper
 }
 
-func NewConfigReader(fileName, configPath, envPrefix, envSeparatorChar string) *configReader {
+// NewConfig is used to create a new instance of Config
+// Config reads the configs from config files or env variables.
+/*
+	config := NewConfig(fileName, configPath, envPrefix, envSeparatorChar)
+*/
+func NewConfig(fileName, configPath, envPrefix, envSeparatorChar string) *configReader {
 	v := viper.New()
 	v.SetConfigName(fileName)
 	v.AddConfigPath(configPath)
@@ -46,26 +61,32 @@ func (cr *configReader) Unsafe() *viper.Viper {
 	return cr.v
 }
 
+// GetString gets a string config
 func (cr *configReader) GetString(key string) string {
 	return cr.v.GetString(key)
 }
 
+// GetBool gets a boolean config
 func (cr *configReader) GetBool(key string) bool {
 	return cr.v.GetBool(key)
 }
 
+// GetInt gets an integer config
 func (cr *configReader) GetInt(key string) int {
 	return cr.v.GetInt(key)
 }
 
+// GetStringSlice gets a string slice ([]string) config
 func (cr *configReader) GetStringSlice(key string) []string {
 	return cr.v.GetStringSlice(key)
 }
 
+// GetIntSlice gets an integer slice ([]int) config
 func (cr *configReader) GetIntSlice(key string) []int {
 	return cr.v.GetIntSlice(key)
 }
 
+// GetStringMap gets a string Map (map[string]interface{}) config
 func (cr *configReader) GetStringMap(key string) map[string]interface{} {
 	return cr.v.GetStringMap(key)
 }

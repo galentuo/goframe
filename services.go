@@ -4,6 +4,10 @@ import (
 	"sync"
 )
 
+// Service is the basic unit of a goframe app.
+// It forms the base of any services like
+// * HTTPService for a http server
+// * BackgroundService for running workers
 type Service interface {
 	// Name is the name of the service;
 	// this would be the prefix in case of HTTPService
@@ -14,11 +18,15 @@ type Service interface {
 	getCtxData() *sync.Map
 }
 
+// BackgroundService is a goframe Service used
+// for running background workers.
 type BackgroundService interface {
 	Service
 	Run() error
 }
 
+// HTTPService is a goframe Service used
+// for running a http server.
 type HTTPService interface {
 	Service
 	prefix() string
