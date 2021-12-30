@@ -20,8 +20,8 @@ type standardJSONResponse struct {
 // Generic is used to write data([]byte) as the http response
 func (drw *defaultResponseWriter) Generic(httpCode int, data []byte) error {
 	drw.res.WriteHeader(httpCode)
-	drw.res.Write(data)
-	return nil
+	_, err := drw.res.Write(data)
+	return err
 }
 
 // SuccessJSON is used to write data as response to a successful http request.
@@ -39,8 +39,9 @@ func (drw *defaultResponseWriter) SuccessJSON(httpCode int, data interface{}, me
 
 	drw.res.Header().Add("Content-Type", "application/json")
 	drw.res.WriteHeader(httpCode)
-	drw.res.Write(response)
-	return nil
+	_, err = drw.res.Write(response)
+
+	return err
 }
 
 // SuccessJSON is used to write err as response to a unsuccessful http request.
@@ -66,6 +67,6 @@ func (drw *defaultResponseWriter) ErrorJSON(err error) error {
 	}
 	drw.res.Header().Add("Content-Type", "application/json")
 	drw.res.WriteHeader(httpCode)
-	drw.res.Write(response)
-	return nil
+	_, err = drw.res.Write(response)
+	return err
 }
