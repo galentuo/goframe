@@ -72,7 +72,10 @@ func apiHandler(hf Handler, api HTTPService, path, method string, ll logger.LogL
 		err := api.middleware().handler(hf)(ctx)
 		if err != nil {
 			ctx.Logger().Error(err.Error())
-			ctx.Response().ErrorJSON(errors.New("something went wrong"))
+			err := ctx.Response().ErrorJSON(errors.New("something went wrong"))
+			if err != nil {
+				ctx.Logger().Error(err.Error())
+			}
 		}
 	})
 }

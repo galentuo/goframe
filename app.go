@@ -95,7 +95,10 @@ func (a *app) Register(_svc Service) {
 	}
 
 	if bg != nil {
-		bg.Run()
+		err := bg.Run()
+		if err != nil {
+			cl.Error(err.Error())
+		}
 	}
 }
 
