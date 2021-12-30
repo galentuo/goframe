@@ -8,16 +8,23 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+// CoreLogger is the core of the package.
+// It is based on zap.Logger in the current release;
+// but it could be exchanged for a different one in
+// future releases.
 type CoreLogger struct {
 	zap.Logger
 }
 
+// Logger is where all the logging happens
+// A Logger can be a initialised by `NewLogger`.
 type Logger struct {
 	level      LogLevel
 	coreLogger *CoreLogger
 	fields     map[string]interface{}
 }
 
+// NewLogger returns a Logger instance.
 func NewLogger(level LogLevel, cl *CoreLogger, fields map[string]interface{}) *Logger {
 	return &Logger{
 		level:      level,
@@ -26,6 +33,7 @@ func NewLogger(level LogLevel, cl *CoreLogger, fields map[string]interface{}) *L
 	}
 }
 
+// NewCoreLogger returns a CoreLogger instance.
 func NewCoreLogger() *CoreLogger {
 	encoderConfig := zapcore.EncoderConfig{
 		MessageKey:     "msg",
@@ -42,11 +50,13 @@ func NewCoreLogger() *CoreLogger {
 	return &cl
 }
 
+// SetField returns a new Logger with the field added
 func (l *Logger) SetField(key string, value interface{}) *Logger {
 	l.fields[key] = value
 	return l
 }
 
+// WithFields returns a new Logger with the fields added
 func (l Logger) WithFields(fields map[string]interface{}) FieldLogger {
 	for k, v := range l.fields {
 		fields[k] = v
@@ -57,53 +67,62 @@ func (l Logger) WithFields(fields map[string]interface{}) FieldLogger {
 	}
 }
 
+// Info logs a message at level logger.LogLevelInfo
 func (l Logger) Info(msg string) {
 	if l.level <= LogLevelInfo {
 		l.coreLogger.Sugar().Infow(msg, mapFieldsToArr(l.fields)...)
 	}
 }
 
+// Error logs a message at level logger.LogLevelInfo
 func (l Logger) Error(msg string) {
 	if l.level <= LogLevelError {
 		l.coreLogger.Sugar().Errorw(msg, mapFieldsToArr(l.fields)...)
 	}
 }
 
+// Warning logs a message at level logger.LogLevelWarn
 func (l Logger) Warning(msg string) {
 	if l.level <= LogLevelWarn {
 		l.coreLogger.Sugar().Warnw(msg, mapFieldsToArr(l.fields)...)
 	}
 }
 
+// Debug logs a message at level logger.LogLevelDebug
 func (l Logger) Debug(msg string) {
 	if l.level <= LogLevelDebug {
 		l.coreLogger.Sugar().Debugw(msg, mapFieldsToArr(l.fields)...)
 	}
 }
 
+// FieldLogger ...
 type FieldLogger struct {
 	inner  Logger
 	fields map[string]interface{}
 }
 
+// Info logs a message at level logger.LogLevelInfo
 func (l FieldLogger) Info(msg string) {
 	if l.inner.level <= LogLevelInfo {
 		l.inner.coreLogger.Sugar().Infow(msg, mapFieldsToArr(l.fields)...)
 	}
 }
 
+// Error logs a message at level logger.LogLevelInfo
 func (l FieldLogger) Error(msg string) {
 	if l.inner.level <= LogLevelError {
 		l.inner.coreLogger.Sugar().Errorw(msg, mapFieldsToArr(l.fields)...)
 	}
 }
 
+// Warning logs a message at level logger.LogLevelWarn
 func (l FieldLogger) Warning(msg string) {
 	if l.inner.level <= LogLevelWarn {
 		l.inner.coreLogger.Sugar().Warnw(msg, mapFieldsToArr(l.fields)...)
 	}
 }
 
+// Debug logs a message at level logger.LogLevelDebug
 func (l FieldLogger) Debug(msg string) {
 	if l.inner.level <= LogLevelDebug {
 		l.inner.coreLogger.Sugar().Debugw(msg, mapFieldsToArr(l.fields)...)
@@ -121,6 +140,7 @@ func mapFieldsToArr(fields map[string]interface{}) []interface{} {
 	return fieldArr
 }
 
+// LogLevel ...
 type LogLevel int
 
 const (
@@ -130,10 +150,12 @@ const (
 	LogLevelError
 )
 
+// String returns the log level as string
 func (ll LogLevel) String() string {
 	return [...]string{"DEBUG", "INFO", "WARN", "ERROR"}[ll]
 }
 
+// LogLevelFromStr converts string to LogLevel
 func LogLevelFromStr(l string) LogLevel {
 	levelStr := strings.ToUpper(l)
 	switch levelStr {

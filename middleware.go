@@ -3,7 +3,7 @@ package goframe
 // MiddlewareFunc defines the interface for a piece of goframe
 // Middleware.
 /*
-	func DoSomething(next HandlerFunction) HandlerFunction {
+	func DoSomething(next Handler) Handler {
 		return func(c ServerContext) error {
 			// do something before calling the next handler
 			err := next(c)
@@ -12,7 +12,7 @@ package goframe
 		}
 	}
 */
-type MiddlewareFunc func(HandlerFunction) HandlerFunction
+type MiddlewareFunc func(Handler) Handler
 
 // Use the specified Middleware for the `HTTPService`.
 // The specified middleware will be inherited by any calls
@@ -26,9 +26,9 @@ type MiddlewareStack struct {
 	stack []MiddlewareFunc
 }
 
-func (ms *MiddlewareStack) handler(h HandlerFunction) HandlerFunction {
+func (ms *MiddlewareStack) handler(h Handler) Handler {
 	if len(ms.stack) > 0 {
-		mh := func(_ HandlerFunction) HandlerFunction {
+		mh := func(_ Handler) Handler {
 			return h
 		}
 

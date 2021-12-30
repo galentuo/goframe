@@ -10,6 +10,11 @@ type health struct {
 	goframe.HTTPService
 }
 
+// Service : health.Service is used to check the health of the app.
+// It returns with http-status `200` & name of the app in data
+/*
+	app.Register(health.Service(app.Name()))
+*/
 func Service(appName string) *health {
 	srv := goframe.NewHTTPService("")
 	srv.Route("/", "GET", func(ctx goframe.ServerContext) error {

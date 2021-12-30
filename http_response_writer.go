@@ -1,6 +1,6 @@
 package goframe
 
-// ResponseWriter interface is used by a goframe HandlerFunction
+// ResponseWriter interface is used by a goframe Handler
 // to construct an HTTP response.
 //
 // A ResponseWriter may not be used after the Router.ServeHTTP method

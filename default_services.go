@@ -32,7 +32,7 @@ func newService(name string) service {
 type httpService struct {
 	*service
 	pathPrefix      string
-	routeMap        map[string][]EndPoint
+	routeMap        map[string][]endPoint
 	middlewareStack *MiddlewareStack
 	children        []*httpService
 }
@@ -51,7 +51,7 @@ func (dhs *httpService) CustomPrefix(prefix string) {
 	dhs.pathPrefix = prefix
 }
 
-func (dhs *httpService) routes() map[string][]EndPoint {
+func (dhs *httpService) routes() map[string][]endPoint {
 	return dhs.routeMap
 }
 
@@ -67,18 +67,18 @@ func (dhs *httpService) Use(mw ...MiddlewareFunc) {
 }
 
 // Route maps a HTTP method request to the path and the specified handler.
-func (dhs *httpService) Route(path, httpMethod string, handler HandlerFunction) {
-	endpoint := EndPoint{
-		httpMethod:      httpMethod,
-		handlerFunction: handler,
+func (dhs *httpService) Route(path, httpMethod string, handler Handler) {
+	endpoint := endPoint{
+		httpMethod: httpMethod,
+		handler:    handler,
 	}
 	var (
-		endpoints []EndPoint
+		endpoints []endPoint
 		ok        bool
 	)
 	routes := dhs.routes()
 	if endpoints, ok = routes[path]; !ok {
-		endpoints = []EndPoint{}
+		endpoints = []endPoint{}
 	}
 
 	endpoints = append(endpoints, endpoint)
@@ -89,7 +89,7 @@ func (dhs *httpService) Route(path, httpMethod string, handler HandlerFunction) 
 // where `name` would be the default prefix of the Router.
 func NewHTTPService(name string) *httpService {
 	ds := newService(name)
-	routeMap := make(map[string][]EndPoint)
+	routeMap := make(map[string][]endPoint)
 	var mwf []MiddlewareFunc
 	mws := MiddlewareStack{
 		stack: mwf,
@@ -115,7 +115,7 @@ func (dhs *httpService) NewGroup() *httpService {
 	newHttpService := httpService{
 		service:         dhs.service,
 		pathPrefix:      dhs.pathPrefix,
-		routeMap:        make(map[string][]EndPoint),
+		routeMap:        make(map[string][]endPoint),
 		middlewareStack: &ms,
 	}
 	children := []*httpService{}

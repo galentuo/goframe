@@ -34,8 +34,8 @@ type HTTPService interface {
 	// custom one passed in. The routes on the service
 	// would have the `Service Name` as a default prefix.
 	CustomPrefix(string)
-	routes() map[string][]EndPoint
-	Route(path, httpMethod string, handler HandlerFunction)
+	routes() map[string][]endPoint
+	Route(path, httpMethod string, handler Handler)
 	middleware() *MiddlewareStack
 	// Use the specified Middleware for the `HTTPService`.
 	// The specified middleware will be inherited by any calls
@@ -52,10 +52,10 @@ type HTTPService interface {
 	getChildren() []*httpService
 }
 
-// HandlerFunction is the basis for a HTTPService Endpoint. A Handler
+// Handler is the basis for a HTTPService Endpoint. A Handler
 // will be given a ServerContext interface that represents the
 // given request/response. It is the responsibility of the
-// HandlerFunction to handle the request/response correctly. This
+// Handler to handle the request/response correctly. This
 // could mean rendering a template, JSON, etc... or it could
 // mean returning an error.
 /*
@@ -63,29 +63,29 @@ type HTTPService interface {
 		return c.Response().GenericJSON("Hello World!")
 	}
 */
-type HandlerFunction func(ServerContext) error
+type Handler func(ServerContext) error
 
-// Endpoint is a type comprising of
-// a route's http method and a HandlerFunction
+// endPoint is a type comprising of
+// a route's http method and a Handler
 /*
-	endpoints["/users"] = []EndPoint{
+	endpoints["/users"] = []endPoint{
 		{
 			httpMethod: "GET"
-			handlerFunction: UserListHandlerFunction
+			handler: UserListHandler
 		},
 	}
 */
-type EndPoint struct {
-	httpMethod      string
-	handlerFunction HandlerFunction
+type endPoint struct {
+	httpMethod string
+	handler    Handler
 }
 
-// Method returns the http method assciated with the EndPoint
-func (e EndPoint) Method() string {
+// Method returns the http method assciated with the endPoint
+func (e endPoint) Method() string {
 	return e.httpMethod
 }
 
-// Handler returns the http Handler assciated with the EndPoint
-func (e EndPoint) Handler() HandlerFunction {
-	return e.handlerFunction
+// Handler returns the http Handler assciated with the endPoint
+func (e endPoint) Handler() Handler {
+	return e.handler
 }
