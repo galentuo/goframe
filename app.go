@@ -41,10 +41,6 @@ func (a *app) SetInCtx(key string, value interface{}) {
 	a.env.Store(key, value)
 }
 
-func (a *app) getCtxData() *sync.Map {
-	return a.env
-}
-
 // Config returns the config reader.
 // Config values can be fetched by keys eg. "server.host".
 // In production configs can be stored as env vars.
@@ -76,6 +72,7 @@ func NewApp(name string, strictSlash bool, cr Config) *app {
 		name:   name,
 		config: cr,
 		mux:    NewRouter(strictSlash),
+		env:    &sync.Map{},
 	}
 
 	ll := logger.LogLevelFromStr(a.config.GetString("log.level"))
@@ -83,12 +80,15 @@ func NewApp(name string, strictSlash bool, cr Config) *app {
 	return &a
 }
 
-func (a *app) Register(_svc Service) {
+// Register registers the service to the app.
+// A service must be registered to the app for it to run.
+func (a *app) Register(svcIn Service) {
 	var (
 		api HTTPService
 		bg  BackgroundService
 	)
-	switch svc := _svc.(type) {
+
+	switch svc := svcIn.(type) {
 	case HTTPService:
 		api = svc
 	case BackgroundService:
@@ -100,7 +100,12 @@ func (a *app) Register(_svc Service) {
 	if api != nil {
 		for path, routes := range api.routes() {
 			for _, endpoint := range routes {
-				a.mux.Handle(endpoint.Method(), api.prefix()+path, apiHandler(endpoint.Handler(), api, path, endpoint.Method(), a.LogLevel(), api.getCtxData()))
+				a.mux.Handle(endpoint.Method(), api.prefix()+path,
+					apiHandler(endpoint.Handler(), api, path,
+						endpoint.Method(), a.LogLevel(),
+						[]*sync.Map{a.env, api.getCtxData()},
+					),
+				)
 			}
 		}
 		for _, each := range api.getChildren() {
