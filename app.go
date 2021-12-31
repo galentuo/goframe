@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/galentuo/goframe/logger"
 )
 
-var (
-	cl *logger.CoreLogger
-)
+var cl *logger.CoreLogger
 
 func init() {
 	cl = logger.NewCoreLogger()
@@ -22,13 +21,28 @@ type app struct {
 	name   string
 	config Config
 	mux    Router
+	env    *sync.Map
 }
 
-func (a *app) Name() string              { return a.name }
+// Name returns the name of the app
+func (a *app) Name() string { return a.name }
+
+// LogLevel returns the log level of the app
 func (a *app) LogLevel() logger.LogLevel { return a.ll }
 
+// CustomCoreLogger is used to replace the core logger with a custom one
+// if required
 func (a *app) CustomCoreLogger(clIn *logger.CoreLogger) {
 	cl = clIn
+}
+
+// SetInCtx is used to set data into ctx
+func (a *app) SetInCtx(key string, value interface{}) {
+	a.env.Store(key, value)
+}
+
+func (a *app) getCtxData() *sync.Map {
+	return a.env
 }
 
 // Config returns the config reader.

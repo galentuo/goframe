@@ -2,6 +2,7 @@ package goframe
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -51,10 +52,11 @@ func (drw *defaultResponseWriter) ErrorJSON(err error) error {
 	}
 	httpCode := int(500)
 
-	if ie, ok := err.(*goframeError); ok {
-		httpCode = ie.HttpCode()
-		responseJson.ErrorCode = ie.ErrCode()
-		responseJson.Message = ie.Message()
+	gfErr := goframeError{}
+	if ok := errors.As(err, &gfErr); ok {
+		httpCode = gfErr.HttpCode()
+		responseJson.ErrorCode = gfErr.ErrCode()
+		responseJson.Message = gfErr.Message()
 	} else {
 		responseJson.ErrorCode = "dev"
 		responseJson.Message = err.Error()
