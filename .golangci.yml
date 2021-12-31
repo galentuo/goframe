@@ -79,18 +79,15 @@ output:
 
 linters:
   enable:
-    - gosec
-    - megacheck
-    - govet
-    - goconst
-    - importas
-    - lll
-    - gocritic
-    - gocyclo
-    - godox
-    - gci
-    - dupl
-    - cyclop
+    - gosec 
+    - megacheck 
+    - govet 
+    - goconst 
+    - lll 
+    - gocritic 
+    - gocyclo 
+    - godox 
+    - dupl 
     - depguard
   presets:
     - bugs
