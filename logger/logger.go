@@ -135,7 +135,7 @@ func mapFieldsToArr(fields map[string]interface{}) []interface{} {
 	for k, v := range fields {
 		fieldArr[i] = k
 		fieldArr[i+1] = v
-		i = i + 2
+		i += 2
 	}
 	return fieldArr
 }
@@ -144,9 +144,13 @@ func mapFieldsToArr(fields map[string]interface{}) []interface{} {
 type LogLevel int
 
 const (
+	// LogLevelDebug ...
 	LogLevelDebug LogLevel = iota
+	// LogLevelInfo ...
 	LogLevelInfo
+	// LogLevelWarn ...
 	LogLevelWarn
+	// LogLevelError ...
 	LogLevelError
 )
 

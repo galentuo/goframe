@@ -83,7 +83,11 @@ func NewContext(ctx context.Context, ll logger.LogLevel) *defaultContext {
 
 // NewServerContext is used to get an instance of the default implementation
 // of goframe.ServerContext
-func NewServerContext(ctx context.Context, ll logger.LogLevel, res http.ResponseWriter, req *http.Request) *defaultServerContext {
+func NewServerContext(ctx context.Context,
+	ll logger.LogLevel,
+	res http.ResponseWriter,
+	req *http.Request,
+) *defaultServerContext {
 	llh := req.Header.Get("X-Request-LogLevel")
 	if llh == "debug" {
 		ll = logger.LogLevelDebug

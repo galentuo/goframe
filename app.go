@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/galentuo/goframe/logger"
 )
 
-var (
-	cl *logger.CoreLogger
-)
+var cl *logger.CoreLogger
 
 func init() {
 	cl = logger.NewCoreLogger()
@@ -22,13 +21,24 @@ type app struct {
 	name   string
 	config Config
 	mux    Router
+	env    *sync.Map
 }
 
-func (a *app) Name() string              { return a.name }
+// Name returns the name of the app
+func (a *app) Name() string { return a.name }
+
+// LogLevel returns the log level of the app
 func (a *app) LogLevel() logger.LogLevel { return a.ll }
 
+// CustomCoreLogger is used to replace the core logger with a custom one
+// if required
 func (a *app) CustomCoreLogger(clIn *logger.CoreLogger) {
 	cl = clIn
+}
+
+// SetInCtx is used to set data into ctx
+func (a *app) SetInCtx(key string, value interface{}) {
+	a.env.Store(key, value)
 }
 
 // Config returns the config reader.
@@ -62,6 +72,7 @@ func NewApp(name string, strictSlash bool, cr Config) *app {
 		name:   name,
 		config: cr,
 		mux:    NewRouter(strictSlash),
+		env:    &sync.Map{},
 	}
 
 	ll := logger.LogLevelFromStr(a.config.GetString("log.level"))
@@ -69,12 +80,15 @@ func NewApp(name string, strictSlash bool, cr Config) *app {
 	return &a
 }
 
-func (a *app) Register(_svc Service) {
+// Register registers the service to the app.
+// A service must be registered to the app for it to run.
+func (a *app) Register(svcIn Service) {
 	var (
 		api HTTPService
 		bg  BackgroundService
 	)
-	switch svc := _svc.(type) {
+
+	switch svc := svcIn.(type) {
 	case HTTPService:
 		api = svc
 	case BackgroundService:
@@ -86,7 +100,12 @@ func (a *app) Register(_svc Service) {
 	if api != nil {
 		for path, routes := range api.routes() {
 			for _, endpoint := range routes {
-				a.mux.Handle(endpoint.Method(), api.prefix()+path, apiHandler(endpoint.Handler(), api, path, endpoint.Method(), a.LogLevel(), api.getCtxData()))
+				a.mux.Handle(endpoint.Method(), api.prefix()+path,
+					apiHandler(endpoint.Handler(), api, path,
+						endpoint.Method(), a.LogLevel(),
+						[]*sync.Map{a.env, api.getCtxData()},
+					),
+				)
 			}
 		}
 		for _, each := range api.getChildren() {

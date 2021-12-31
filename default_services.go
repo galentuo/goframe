@@ -10,10 +10,12 @@ type service struct {
 	env  *sync.Map
 }
 
+// Name returns the name of the service
 func (ds *service) Name() string {
 	return ds.name
 }
 
+// SetInCtx is used to set data into ctx
 func (ds *service) SetInCtx(key string, value interface{}) {
 	ds.env.Store(key, value)
 }

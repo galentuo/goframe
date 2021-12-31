@@ -14,7 +14,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func apiHandler(hf Handler, api HTTPService, path, method string, ll logger.LogLevel, env *sync.Map) http.Handler {
+func apiHandler(hf Handler,
+	api HTTPService,
+	path, method string,
+	ll logger.LogLevel,
+	envs []*sync.Map,
+) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		rl := &responseLogger{w: w, status: http.StatusOK}
 		w = httpsnoop.Wrap(w, httpsnoop.Hooks{
@@ -26,10 +31,14 @@ func apiHandler(hf Handler, api HTTPService, path, method string, ll logger.LogL
 			},
 		})
 		ctx := NewServerContext(r.Context(), ll, w, r)
-		env.Range(func(key, value interface{}) bool {
-			ctx.Set(fmt.Sprint(key), value)
-			return true
-		})
+
+		for _, each := range envs {
+			env := each
+			env.Range(func(key, value interface{}) bool {
+				ctx.Set(fmt.Sprint(key), value)
+				return true
+			})
+		}
 		t := time.Now()
 
 		defer func() {
