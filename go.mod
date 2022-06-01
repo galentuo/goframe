@@ -3,7 +3,7 @@ module github.com/galentuo/goframe
 go 1.16
 
 require (
-	github.com/felixge/httpsnoop v1.0.2
+	github.com/felixge/httpsnoop v1.0.3
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/spf13/viper v1.11.0
