@@ -46,12 +46,12 @@ func (a *app) SetInCtx(key string, value interface{}) {
 // In production configs can be stored as env vars.
 //
 // Defaults:
-// * The default config reader expects the config files
-// 	 to be kept inside configs/ dir in app root dir.
-// * The name of the app would be the default expected config file name.
-// * While using env vars, `_` would be the default separator.
-// * The env vars would have the app name as a default prefix.
-// * eg. for app name "simple" -> simple_server_host
+//   - The default config reader expects the config files
+//     to be kept inside configs/ dir in app root dir.
+//   - The name of the app would be the default expected config file name.
+//   - While using env vars, `_` would be the default separator.
+//   - The env vars would have the app name as a default prefix.
+//   - eg. for app name "simple" -> simple_server_host
 func (a *app) Config() Config { return a.config }
 
 // NewApp returns an instance of app.
